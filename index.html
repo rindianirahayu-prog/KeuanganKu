@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KeuanganKu V2.15 - Auto Translate Fixed</title>
+    <title>KeuanganKu V2.16 - Mobile Fix (.bin)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -82,7 +82,6 @@
         .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
         
-        /* NEW CLASS: GRID FORM (Untuk perbaikan input mobile) */
         .grid-form { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
@@ -543,10 +542,10 @@
         <div class="card">
             <h3 data-i18n="backup">🛡️ Backup Data</h3>
             <div class="grid-2">
-                <button onclick="backupData()" class="btn-outline" data-i18n="save">💾 Simpan (.json)</button>
-                <button onclick="document.getElementById('fileInput').click()" class="btn-outline" data-i18n="open">📂 Buka (.json)</button>
+                <button onclick="backupData()" class="btn-outline" data-i18n="save">💾 Simpan (.bin)</button>
+                <button onclick="document.getElementById('fileInput').click()" class="btn-outline" data-i18n="open">📂 Buka (.json/.bin)</button>
             </div>
-            <input type="file" id="fileInput" accept=".json" onchange="restoreData(this)">
+            <input type="file" id="fileInput" accept=".json,.bin" onchange="restoreData(this)">
         </div>
     </div>
 
@@ -1497,7 +1496,33 @@ function deleteSubCategory() {
 }
 function setBudget() { const m=document.getElementById('bMonth').value; const s=document.getElementById('bSub').value; const a=Number(document.getElementById('bAmount').value); if(m&&s&&a) { if(!budgets[m]) budgets[m]={}; budgets[m][s]=a; localStorage.setItem('budgets',JSON.stringify(budgets)); renderDashboard(); showToast("Set!"); } }
 function saveData() { localStorage.setItem('transactions', JSON.stringify(transactions)); }
-function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify({transactions,categories,budgets,funds,debts,subs,wallets,userProfile,appConfig,version:'7.3'})],{type:'application/json'})); a.download=`KeuanganKu_Fixed_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
+
+// --- FIXED BACKUP FUNCTION FOR MOBILE (.bin) ---
+function backupData() {
+    const dataStr = JSON.stringify({
+        transactions, categories, budgets, funds, debts, subs, wallets, userProfile, appConfig, version: '7.3'
+    });
+    
+    // Create Blob as octet-stream to force download on Android
+    const blob = new Blob([dataStr], {type: 'application/octet-stream'});
+    const url = window.URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    // Save as .bin
+    a.download = `KeuanganKu_Backup_${new Date().toISOString().slice(0,10)}.bin`;
+    
+    // Append to body is required for some mobile browsers
+    document.body.appendChild(a);
+    a.click();
+    
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 100);
+}
+
 function restoreData(input) { const r=new FileReader(); r.onload=e=>{ try{ const d=JSON.parse(e.target.result); if(confirm("Overwrite data?")){ if(d.transactions)localStorage.setItem('transactions',JSON.stringify(d.transactions)); if(d.categories)localStorage.setItem('myCategories',JSON.stringify(d.categories)); if(d.wallets)localStorage.setItem('wallets',JSON.stringify(d.wallets)); if(d.userProfile)localStorage.setItem('userProfile',JSON.stringify(d.userProfile)); if(d.appConfig)localStorage.setItem('appConfig',JSON.stringify(d.appConfig)); location.reload(); } }catch(e){alert("File Error");} }; if(input.files[0]) r.readAsText(input.files[0]); }
 function downloadExcel() { const ws=XLSX.utils.json_to_sheet(transactions); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Data"); XLSX.writeFile(wb,"KeuanganKu.xlsx"); }
 
