@@ -82,6 +82,13 @@
         .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
         
+        /* NEW CLASS: GRID FORM (Untuk perbaikan input mobile) */
+        .grid-form { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+            gap: 10px; 
+        }
+
         .card { 
             background: var(--bg-card); padding: 25px; border-radius: var(--radius); 
             border: 2px solid transparent; box-shadow: var(--shadow); transition: .3s;
@@ -357,11 +364,11 @@
 
         <div class="card">
             <h3 data-i18n="target_budget">🎯 Target Budget</h3>
-             <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <input type="month" id="bMonth" style="flex:1">
-                <input type="number" id="bAmount" data-i18n-ph="ph_limit" placeholder="Limit" style="flex:1">
-                <select id="bCat" onchange="updateSub('bCat','bSub')" style="flex:1"><option>Kategori</option></select>
-                <select id="bSub" style="flex:1"><option>-</option></select>
+             <div class="grid-form">
+                <input type="month" id="bMonth">
+                <input type="number" id="bAmount" data-i18n-ph="ph_limit" placeholder="Limit">
+                <select id="bCat" onchange="updateSub('bCat','bSub')"><option>Kategori</option></select>
+                <select id="bSub"><option>-</option></select>
             </div>
             <button onclick="setBudget()" class="btn-outline btn-block" style="margin-top:5px" data-i18n="btn_set_alarm">Pasang Alarm Budget 🚨</button>
             <div id="budgetList" style="margin-top:15px; max-height:200px; overflow-y:auto"></div>
