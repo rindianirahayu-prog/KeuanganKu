@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KeuanganKu V2.7 Logic Fix</title>
+    <title>KeuanganKu V2.15 - Auto Translate Fixed</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
-<style>
+    <style>
         :root {
             --hue: 250; 
             --primary: hsl(var(--hue), 80%, 60%);
@@ -402,7 +402,11 @@
                         <option value="payable" data-i18n="payable">Saya Pinjam Dia (Hutang) 🔴</option>
                     </select>
                     <input type="number" id="dAmount" data-i18n-ph="ph_amount" placeholder="Berapa?">
-                    <button onclick="addDebt()" class="btn-block" data-i18n="btn_record">Catat</button>
+                    
+                    <label class="text-sm" style="margin-top:5px; display:block" data-i18n="use_wallet">Gunakan Dompet:</label>
+                    <select id="dWallet"></select>
+                    
+                    <button onclick="addDebt()" class="btn-block" style="margin-top:10px" data-i18n="btn_record">Catat</button>
                 </div>
                 <div style="text-align:center; display:flex; flex-direction:column; justify-content:center; background:var(--bg-body); border-radius:16px; padding:15px;">
                     <div class="text-sm" data-i18n="total_receivable">Total Piutang (Uangmu di luar)</div>
@@ -626,14 +630,13 @@ const translations = {
         subs_routine: "🔄 Langganan Rutin", subs_desc: "Jangan sampai lupa bayar Netflix/Wifi!", month: "Bulan", year: "Tahun",
         
         // --- SETTINGS ---
-        nickname: "Nama Panggilan", personalization: "🌍 Personalisasi & Bahasa", language: "Bahasa / Language / 语言", currency: "Mata Uang / Currency / 货币", custom_bg: "Background Kostum", theme: "🎨 Tema Warna",
+        nickname: "Nama Panggilan", personalization: "🌍 Personalisasi & Bahasa", language: "Bahasa / Language", currency: "Mata Uang / Currency", custom_bg: "Background Kostum", theme: "🎨 Tema Warna",
         data_manage: "⚙️ Kelola Data", add_cat: "Tambah Kategori", del_cat: "Hapus Kategori", add_sub: "Tambah Sub", del_sub: "Hapus Sub Kategori", backup: "🛡️ Backup Data", save: "💾 Simpan (.json)", open: "📂 Buka (.json)",
         
         // --- MASCOT & ALERTS ---
         mascot_hi: "Halo", mascot_warn: "Hati-hati", mascot_cool: "Mode Sultan", mascot_danger: "Gawat",
         msg_balance: "Siap mengatur uang hari ini?", msg_warn: "Dana darurat menipis.", msg_cool: "Keuangan sangat sehat.", msg_danger: "Saldo minus, stop jajan!",
         
-        // --- NEW MISSING KEYS (FIXED) ---
         months_arr: ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"],
         avg_monthly: "Pengeluaran Wajib / Bulan", current_ef: "Dana Darurat Saat Ini", target: "Target", progress: "Progress", status: "Status",
         status_risk: "🟥 Risiko Tinggi", status_safe: "🟩 Aman", status_ideal: "🟦 Ideal", status_ok: "🟧 Cukup",
@@ -643,41 +646,47 @@ const translations = {
         storage_loc: "Ke Dompet (Penyimpanan)", avg_txt: "Rata-rata",
         balance_txt: "Saldo:", short_receivable: "PIUTANG", short_payable: "HUTANG", status_paid: "LUNAS",
         
-        // --- PLACEHOLDER & BUTTON FIXES ---
         ana_detail_title: "📈 Analisis Detail", ana_monthly: "🗓️ Per Bulan", ana_range: "📅 Rentang Tanggal", btn_show_ana: "🔎 Tampilkan Analisis",
         theme_dots: "Polkadot", theme_grad: "Gradasi", theme_plain: "Polos",
         ph_name: "Nama", ph_cost: "Biaya", ph_amount: "Berapa/Jumlah", ph_note: "Catatan (mis: Makan)", ph_who: "Siapa?", ph_wallet_name: "Contoh: BCA / Tunai", ph_target: "Target Harga", ph_your_name: "Nama Anda", ph_search: "Cari...", ph_limit: "Limit Budget",
         opt_select: "-- Pilih --", btn_upload: "🖼️ Upload Foto", txt_max_size: "Max 1 MB. (Disimpan di browser)",
-        opt_sub_placeholder: "Sub Kategori..."
+        opt_sub_placeholder: "Sub Kategori...",
+
+        // --- NEW KEYS FOR DYNAMIC TRANSLATION (FIXED) ---
+        use_wallet: "Gunakan Dompet:",
+        pay_btn: "Bayar",
+        del_btn: "Hapus",
+        pay_confirm: "Bayar",
+        settle_prompt: "Pilih Dompet untuk Pelunasan:\n",
+        settle_saved: "Lunas & Saldo Diupdate!",
+        debt_saved: "Hutang dicatat!",
+        trans_success: "Transfer Berhasil!",
+        wallet_invalid: "Dompet tidak valid!",
+        data_incomplete: "Data tidak lengkap!",
+        mark_paid: "✅ Tandai Lunas",
+        mark_ok: "✅ OK"
     },
     en: {
-        // --- NAV & GENERAL ---
         nav_home: "🏠 Home", nav_analytics:"📊 Analytics", nav_wallet: "👜 Wallets", nav_record: "📝 Record", nav_debt: "📒 Debts", nav_subs: "🔄 Subs", nav_account: "👤 Account",
         total_asset: "Total Assets", this_month: "This Month", income: "Income", expense: "Expense", runway: "Runway (Emergency) 🌬️", dream_fund: "Dream Funds ✨",
         analysis_title: "📈 Financial Analysis", annual_chart: "📊 Annual Chart", expense_portion: "🍕 Spending Portion",
         selected_month: "Selected Month", selected_year: "Selected Year", btn_add: "Add", btn_save: "Save", btn_cancel: "Cancel",
         
-        // --- WALLET ---
         manage_wallet: "👜 Manage Wallets", wallet_desc: "Create Cash, Bank, or E-Wallet accounts.", wallet_name: "Wallet Name", type: "Type", initial_balance: "Initial Balance", btn_create_wallet: "Create Wallet",
         transfer_title: "⇄ Transfer Funds", from: "From", to: "To", btn_transfer: "Transfer Now", source_wallet: "From Wallet", target_wallet: "To Wallet",
         
-        // --- TRANSACTIONS ---
         record_trans: "📝 Record Transaction", wallet: "Wallet / Account", category: "Category", target_budget: "🎯 Budget Target", btn_set_alarm: "Set Budget Alarm 🚨",
         history: "🔍 History", all: "All", date: "Date", info: "Info", amount: "Amount", note: "Note",
         
-        // --- DEBT & SUBS ---
         debt_book: "📒 Debt Book", receivable: "They Owe Me (Receivable) 🟢", payable: "I Owe Them (Payable) 🔴", btn_record: "Record", total_receivable: "Total Receivables", total_payable: "Total Payables",
         subs_routine: "🔄 Subscriptions", subs_desc: "Don't forget Netflix/Wifi bills!", month: "Month", year: "Year",
         
-        // --- SETTINGS ---
-        nickname: "Nickname", personalization: "🌍 Personalization & Language", language: "Bahasa / Language / 语言 ", currency: "Mata Uang / Currency / 货币", custom_bg: "Custom Background", theme: "🎨 Color Theme",
+        nickname: "Nickname", personalization: "🌍 Personalization & Language", language: "Bahasa / Language", currency: "Mata Uang / Currency", custom_bg: "Custom Background", theme: "🎨 Color Theme",
         data_manage: "⚙️ Manage Data", add_cat: "Add Category", del_cat: "Delete Category", add_sub: "Add Sub-Category", del_sub: "Delete Sub-Category", backup: "🛡️ Backup Data", save: "💾 Save (.json)", open: "📂 Open (.json)",
         
-        // --- MASCOT & ALERTS ---
         mascot_hi: "Hello", mascot_warn: "Careful", mascot_cool: "Sultan Mode", mascot_danger: "Alert",
         msg_balance: "Ready to manage money?", msg_warn: "Emergency funds running low.", msg_cool: "Financial health is great.", msg_danger: "Balance negative, stop spending!",
         
-        // --- NEW MISSING KEYS ---
         months_arr: ["January","February","March","April","May","June","July","August","September","October","November","December"],
         avg_monthly: "Mandatory Exp / Month", current_ef: "Current Emergency Fund", target: "Target", progress: "Progress", status: "Status",
         status_risk: "🟥 High Risk", status_safe: "🟩 Safe", status_ideal: "🟦 Ideal", status_ok: "🟧 Good Enough",
@@ -687,41 +696,47 @@ const translations = {
         storage_loc: "To Wallet (Storage)", avg_txt: "Avg",
         balance_txt: "Balance:", short_receivable: "LENT", short_payable: "DEBT", status_paid: "PAID",
 
-        // --- PLACEHOLDER & BUTTON FIXES ---
         ana_detail_title: "📈 Detailed Analysis", ana_monthly: "🗓️ Monthly", ana_range: "📅 Date Range", btn_show_ana: "🔎 Show Analytics",
         theme_dots: "Polka", theme_grad: "Gradient", theme_plain: "Plain",
         ph_name: "Name", ph_cost: "Cost", ph_amount: "Amount", ph_note: "Note (ex: Lunch)", ph_who: "Who?", ph_wallet_name: "Ex: Bank / Cash", ph_target: "Target Price", ph_your_name: "Your Name", ph_search: "Search...", ph_limit: "Budget Limit",
         opt_select: "-- Select --", btn_upload: "🖼️ Upload Photo", txt_max_size: "Max 1 MB. (Saved locally)",
-        opt_sub_placeholder: "Sub-Category..."
+        opt_sub_placeholder: "Sub-Category...",
+
+        // --- NEW KEYS FOR DYNAMIC TRANSLATION (FIXED) ---
+        use_wallet: "Use Wallet:",
+        pay_btn: "Pay",
+        del_btn: "Delete",
+        pay_confirm: "Pay",
+        settle_prompt: "Select Wallet for Settlement:\n",
+        settle_saved: "Settled & Balance Updated!",
+        debt_saved: "Debt Recorded!",
+        trans_success: "Transfer Success!",
+        wallet_invalid: "Invalid Wallet!",
+        data_incomplete: "Incomplete Data!",
+        mark_paid: "✅ Mark Paid",
+        mark_ok: "✅ OK"
     },
     ch: {
-        // --- NAV & GENERAL ---
         nav_home: "🏠 首页", nav_analytics:"📊 分析", nav_wallet: "👜 钱包", nav_record: "📝 记账", nav_debt: "📒 债务", nav_subs: "🔄 订阅", nav_account: "👤 我的",
         total_asset: "总资产", this_month: "本月", income: "收入", expense: "支出", runway: "备用金 (应急)🌬️", dream_fund: "梦想基金 ✨",
         analysis_title: "📈 财务分析", annual_chart: "📊 年度图表", expense_portion: "🍕 支出占比",
         selected_month: "所选月份", selected_year: "所选年份", btn_add: "添加", btn_save: "保存", btn_cancel: "取消",
         
-        // --- WALLET ---
         manage_wallet: "👜 钱包管理", wallet_desc: "创建现金、银行或电子钱包账户。", wallet_name: "账户名称", type: "类型", initial_balance: "初始余额", btn_create_wallet: "创建钱包",
         transfer_title: "⇄ 资金转账", from: "从", to: "到", btn_transfer: "立即转账", source_wallet: "从钱包", target_wallet: "到钱包",
         
-        // --- TRANSACTIONS ---
         record_trans: "📝 记录交易", wallet: "账户 / 钱包", category: "类别", target_budget: "🎯 预算目标", btn_set_alarm: "设置预算提醒🚨",
         history: "🔍 历史记录", all: "全部", date: "日期", info: "备注", amount: "金额", note: "备注",
         
-        // --- DEBT & SUBS ---
         debt_book: "📒 账本", receivable: "借出款 (应收) 🟢", payable: "欠款 (应付) 🔴", btn_record: "记录", total_receivable: "总应收款", total_payable: "总应付款",
         subs_routine: "🔄 定期订阅", subs_desc: "别忘了视频会员或宽带费用!", month: "月", year: "年",
         
-        // --- SETTINGS ---
-        nickname: "昵称", personalization: "🌍 个性化与语言", language: "Bahasa / Language / 语言 ", currency: "Mata Uang / Currency / 货币 ", custom_bg: "自定义背景", theme: "🎨 色彩主题",
+        nickname: "昵称", personalization: "🌍 个性化与语言", language: "Bahasa / Language", currency: "Mata Uang / Currency", custom_bg: "自定义背景", theme: "🎨 色彩主题",
         data_manage: "⚙️ 数据管理", add_cat: "添加类别", del_cat: "删除类别", add_sub: "添加子类别", del_sub: "删除子类别", backup: "🛡️ 备份数据", save: "💾 保存 (.json)", open: "📂 打开 (.json)",
         
-        // --- MASCOT & ALERTS ---
         mascot_hi: "你好", mascot_warn: "注意", mascot_cool: "土豪模式", mascot_danger: "警告",
         msg_balance: "准备好理财了吗?", msg_warn: "应积极进步组。", msg_cool: "财务状况非常健康。", msg_danger: "余额为负，停止消费！",
         
-        // --- NEW MISSING KEYS ---
         months_arr: ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"],
         avg_monthly: "每月必须支出", current_ef: "当前备用金", target: "目标", progress: "进度", status: "状态",
         status_risk: "🟥 高风险", status_safe: "🟩 安全", status_ideal: "🟦 理想", status_ok: "🟧 还行",
@@ -731,12 +746,25 @@ const translations = {
         storage_loc: "存入账户", avg_txt: "平均",
         balance_txt: "余额:", short_receivable: "借出", short_payable: "欠款", status_paid: "已付",
 
-        // --- PLACEHOLDER & BUTTON FIXES ---
         ana_detail_title: "📈 详细分析", ana_monthly: "🗓️ 按月", ana_range: "📅 日期范围", btn_show_ana: "🔎 显示分析",
         theme_dots: "波点", theme_grad: "渐变", theme_plain: "纯色",
         ph_name: "名称", ph_cost: "费用", ph_amount: "金额", ph_note: "备注 (如:午餐)", ph_who: "谁?", ph_wallet_name: "例如: 银行 / 现金", ph_target: "目标金额", ph_your_name: "你的名字", ph_search: "搜索...", ph_limit: "预算限额",
         opt_select: "-- 选择 --", btn_upload: "🖼️ 上传图片", txt_max_size: "最大 1MB (本地保存)",
-        opt_sub_placeholder: "子类别..."
+        opt_sub_placeholder: "子类别...",
+
+        // --- NEW KEYS FOR DYNAMIC TRANSLATION (FIXED) ---
+        use_wallet: "使用钱包:",
+        pay_btn: "支付",
+        del_btn: "删除",
+        pay_confirm: "支付",
+        settle_prompt: "选择结算钱包:\n",
+        settle_saved: "已结清并更新余额!",
+        debt_saved: "债务已记录!",
+        trans_success: "转账成功!",
+        wallet_invalid: "钱包无效!",
+        data_incomplete: "数据不完整!",
+        mark_paid: "✅ 标记为已付",
+        mark_ok: "✅ 完成"
     }
 };
 
@@ -747,12 +775,10 @@ let currentLang = appConfig.lang;
 function t(key) { return translations[currentLang][key] || key; }
 
 function updateDOMText() {
-    // 1. Update text content
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if(translations[currentLang][key]) el.innerText = translations[currentLang][key];
     });
-    // 2. Update Placeholders
     document.querySelectorAll('[data-i18n-ph]').forEach(el => {
         const key = el.getAttribute('data-i18n-ph');
         if(translations[currentLang][key]) el.placeholder = translations[currentLang][key];
@@ -762,9 +788,8 @@ function updateDOMText() {
 function changeLanguage(lang) {
     currentLang = lang; appConfig.lang = lang; localStorage.setItem('appConfig', JSON.stringify(appConfig));
     updateDOMText(); renderDashboard(); renderHistory(); renderDebts(); renderSubs(); refreshTransferDropdowns(); populateChartFilters();
-    refreshCats(); // Refresh dropdown text
-    updateSub('tCat','tSub');
-    updateSub('bCat','bSub');
+    refreshCats(); 
+    updateSub('tCat','tSub'); updateSub('bCat','bSub');
 }
 
 // --- CURRENCY LOGIC ---
@@ -831,7 +856,7 @@ function loadTheme() {
 function updateMascot(balance, runway) {
     const emo = document.getElementById('mascotEmoji'); const tit = document.getElementById('mascotTitle'); const txt = document.getElementById('mascotText');
     const name = userProfile.name || "Bos"; 
-    if(balance < 0) { emo.innerText = "😱"; tit.innerText = `${t('mascot_danger')}, ${name}!`; txt.innerText = t('msg_danger'); }
+    if(balance < 0) { emo.innerText = "😰"; tit.innerText = `${t('mascot_danger')}, ${name}!`; txt.innerText = t('msg_danger'); }
     else if (runway < 1) { emo.innerText = "😰"; tit.innerText = `${t('mascot_warn')}, ${name}!`; txt.innerText = t('msg_warn'); }
     else if (runway < 3) { emo.innerText = "🤔"; tit.innerText = `${t('mascot_warn')}, ${name}`; txt.innerText = t('msg_balance'); }
     else if (runway >= 6) { emo.innerText = "😎"; tit.innerText = `${t('mascot_cool')}, ${name}!`; txt.innerText = t('msg_cool'); }
@@ -841,7 +866,6 @@ function updateMascot(balance, runway) {
 // --- DATA INITIALIZATION ---
 const defaultCats = { 'Kebutuhan': ['Makan','Transport','Cicilan','Listrik/Air','Belanja'], 'Keinginan': ['Jajan','Hobi','Hiburan'], 'Tabungan': ['Dana Darurat','Investasi'], 'Gaji': ['Utama','Bonus'], 'Hutang/Piutang': ['Bayar Hutang', 'Terima Piutang'], 'Transfer': ['Masuk', 'Keluar'] };
 let categories = JSON.parse(localStorage.getItem('myCategories')) || defaultCats;
-// Ensure 'Transfer' cat exists for old data
 if(!categories['Transfer']) categories['Transfer'] = ['Masuk', 'Keluar'];
 
 let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
@@ -850,7 +874,7 @@ let funds = JSON.parse(localStorage.getItem('sinkingFunds') || '[]');
 let debts = JSON.parse(localStorage.getItem('debts') || '[]');
 let subs = JSON.parse(localStorage.getItem('subs') || '[]');
 let wallets = JSON.parse(localStorage.getItem('wallets')) || [{id:1, name:'Tunai', icon:'💵', initial:0}];
-let userProfile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Bos', joined: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) };
+let userProfile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Bos', joined: new Date().toLocaleDateString() };
 
 // --- ANALYTICS LOGIC ---
 function setAnalyticsMode(mode) {
@@ -863,11 +887,9 @@ function setAnalyticsMode(mode) {
         
         const mSel = document.getElementById('anaMonth');
         const ySel = document.getElementById('anaYear');
-        // REFRESH MONTHS ON CHANGE LANGUAGE
-        const months = translations[currentLang].months_arr; // AMBIL DARI TRANSLATION
+        const months = translations[currentLang].months_arr;
         mSel.innerHTML = months.map((m,i) => `<option value="${i}">${m}</option>`).join('');
         
-        // Cek jika tahun kosong baru isi
         if (ySel.options.length === 0) {
             const cy = new Date().getFullYear();
             for(let i=cy-2; i<=cy+1; i++) ySel.innerHTML += `<option value="${i}">${i}</option>`;
@@ -897,17 +919,15 @@ function calculateAnalytics() {
         endDate = new Date(e);
     }
 
-    // Filter transactions
     const filtered = transactions.filter(t => {
         const d = new Date(t.date);
         return d >= startDate && d <= endDate;
     });
 
-    // Aggregation: Type -> Cat -> Sub
     const report = { income: 0, expense: 0, details: {} };
 
     filtered.forEach(t => {
-        if(t.cat === 'Transfer') return; // Exclude transfers from analysis
+        if(t.cat === 'Transfer') return;
         
         if (t.type === 'income') report.income += t.amount;
         else report.expense += t.amount;
@@ -923,10 +943,8 @@ function calculateAnalytics() {
         report.details[typeKey][t.cat].subs[subName] += t.amount;
     });
 
-    // Render HTML
     const container = document.getElementById('analyticsResult');
     
-    // Summary Cards
     let html = `
     <div class="grid-2" style="margin-bottom:20px; margin-top:20px">
         <div class="card" style="padding:15px; text-align:center; border-bottom:4px solid var(--secondary)">
@@ -940,7 +958,6 @@ function calculateAnalytics() {
     </div>
     `;
 
-    // Detail List
     const renderSection = (type, title, color) => {
         if (!report.details[type]) return '';
         let sectionHtml = `<h4 style="margin:15px 0 10px 0; color:${color}">${title}</h4>`;
@@ -976,8 +993,6 @@ function calculateAnalytics() {
 
     container.innerHTML = html;
 }
-
-// Init Analytics on load
 setAnalyticsMode('month');
 
 // --- AVATAR LOGIC ---
@@ -995,26 +1010,15 @@ function handleAvatarFile(input) {
         reader.readAsDataURL(file);
     }
 }
-
 function updateProfileUI() {
     document.getElementById('profileNameDisplay').innerText = userProfile.name || 'User';
     document.getElementById('inputProfileName').value = userProfile.name || '';
-    
     const av = document.getElementById('profileAvatar');
     const imgSrc = userProfile.avatar || null;
-    
-    if (imgSrc) {
-        av.innerHTML = `<img src="${imgSrc}" alt="avatar">`;
-    } else {
-        // Default SVG (No Text)
-        av.innerHTML = `
-        <svg viewBox="0 0 24 24">
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-        </svg>`;
-    }
+    if (imgSrc) { av.innerHTML = `<img src="${imgSrc}" alt="avatar">`; } 
+    else { av.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`; }
 }
 
-// --- HELPERS FOR CALCULATIONS ---
 function getWalletBalance(wid) {
     const w = wallets.find(x => x.id === wid); if(!w) return 0;
     const trans = transactions.filter(t => t.walletId === wid || (!t.walletId && wid === wallets[0].id));
@@ -1028,43 +1032,32 @@ function getEmergencyFundData() {
     const expWajib = transactions.filter(t => t.type === 'expense' && wajibCats.includes(t.cat));
     const months = {};
     expWajib.forEach(t => { const m = t.date.slice(0, 7); months[m] = (months[m] || 0) + t.amount; });
-    
     const monthKeys = Object.keys(months);
     const totalExp = Object.values(months).reduce((a, b) => a + b, 0);
     const avgMonthlyExp = monthKeys.length ? totalExp / monthKeys.length : 0;
-    
     const emergencyFund = transactions.filter(t => t.cat === 'Tabungan' && t.sub === 'Dana Darurat').reduce((sum, t) => sum + (t.type === 'income' ? t.amount : -t.amount), 0);
     const targetMonths = 6;
     const idealFund = avgMonthlyExp * targetMonths;
     const progress = idealFund > 0 ? (emergencyFund / idealFund) * 100 : 0;
     const runway = avgMonthlyExp > 0 ? (emergencyFund / avgMonthlyExp) : 0;
-
     return { avgMonthlyExp, emergencyFund, idealFund, progress, targetMonths, runway };
 }
 
-// --- INITIALIZATION ---
 function init() {
     loadTheme();
     document.getElementById('langSelect').value = appConfig.lang;
     document.getElementById('currencySymbol').value = appConfig.curSymbol;
     document.getElementById('currencyLocale').value = appConfig.curLocale;
-    
-    // Set default value for tSub before refresh - CLEANED UP
     document.getElementById('tSub').innerHTML = `<option value="">-</option>`;
     document.getElementById('bSub').innerHTML = `<option value="">-</option>`;
-
     updateDOMText();
-
     document.getElementById('tDate').valueAsDate = new Date();
     document.getElementById('bMonth').value = new Date().toISOString().slice(0, 7);
     populateChartFilters(); 
     refreshCats(); refreshWalletsDropdown(); renderDashboard(); renderHistory();
-    renderAccount(); 
-    updateProfileUI(); // Ensure UI sync
-    renderCharts(); // Render initial charts
+    renderAccount(); updateProfileUI(); renderCharts();
 }
 
-// --- PROFILE LOGIC ---
 function updateProfile() {
     const name = document.getElementById('inputProfileName').value;
     if(name) {
@@ -1074,10 +1067,7 @@ function updateProfile() {
         showToast(t('btn_save') + "!");
     }
 }
-
-function renderAccount() {
-    updateProfileUI();
-}
+function renderAccount() { updateProfileUI(); }
 
 // --- WALLETS LOGIC ---
 function addWallet() {
@@ -1111,169 +1101,100 @@ function renderWallets() {
     }).join('');
 }
 function refreshWalletsDropdown() {
-    const s = document.getElementById('tWallet');
-    const es = document.getElementById('editWallet');
-    const nws = document.getElementById('nabungSourceWallet');
-    const nwt = document.getElementById('nabungTargetWallet'); 
-    const emgSrc = document.getElementById('emgSourceWallet');
-    const emgTgt = document.getElementById('emgTargetWallet');
-    
     const opts = wallets.map(w => `<option value="${w.id}">${w.icon} ${w.name}</option>`).join('');
-    
-    if(s) s.innerHTML = opts;
-    if(es) es.innerHTML = opts;
-    if(nws) nws.innerHTML = opts;
-    if(nwt) nwt.innerHTML = opts; 
-    if(emgSrc) emgSrc.innerHTML = opts;
-    if(emgTgt) emgTgt.innerHTML = opts;
+    ['tWallet', 'editWallet', 'nabungSourceWallet', 'nabungTargetWallet', 'emgSourceWallet', 'emgTargetWallet', 'dWallet'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.innerHTML = opts;
+    });
     refreshTransferDropdowns();
 }
 
-// --- TRANSFER LOGIC ---
 function refreshTransferDropdowns() {
-    const s = document.getElementById('trfSource');
-    const t = document.getElementById('trfTarget');
     const opts = wallets.map(w => `<option value="${w.id}">${w.icon} ${w.name}</option>`).join('');
-    if(s) s.innerHTML = opts;
-    if(t) t.innerHTML = opts;
+    ['trfSource', 'trfTarget'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.innerHTML = opts;
+    });
 }
 
 function processTransfer() {
     const s = Number(document.getElementById('trfSource').value);
     const t = Number(document.getElementById('trfTarget').value);
     const a = Number(document.getElementById('trfAmount').value);
-    
     if(s === t) return showToast("Dompet sama!", "error");
     if(!a || a <= 0) return showToast("Nominal salah!", "error");
 
-    const wS = wallets.find(w => w.id === s);
-    const wT = wallets.find(w => w.id === t);
+    const wT = wallets.find(w => w.id === t); const wS = wallets.find(w => w.id === s);
 
-    // Record Out
-    transactions.push({
-        id: Date.now(), 
-        date: new Date().toISOString().split('T')[0],
-        type: 'expense', 
-        cat: 'Transfer', 
-        sub: 'Keluar', 
-        amount: a, 
-        note: `Transfer ke ${wT.name}`, 
-        walletId: s
-    });
-
-    // Record In (add slight delay to ID to ensure order)
+    transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], type: 'expense', cat: 'Transfer', sub: 'Keluar', amount: a, note: `Transfer ke ${wT.name}`, walletId: s });
     setTimeout(() => {
-        transactions.push({
-            id: Date.now() + 1, 
-            date: new Date().toISOString().split('T')[0],
-            type: 'income', 
-            cat: 'Transfer', 
-            sub: 'Masuk', 
-            amount: a, 
-            note: `Terima dari ${wS.name}`, 
-            walletId: t
-        });
-        
-        saveData(); 
-        renderDashboard(); 
-        renderHistory(); 
-        renderWallets();
-        showToast("Transfer Berhasil!");
+        transactions.push({ id: Date.now() + 1, date: new Date().toISOString().split('T')[0], type: 'income', cat: 'Transfer', sub: 'Masuk', amount: a, note: `Terima dari ${wS.name}`, walletId: t });
+        saveData(); renderDashboard(); renderHistory(); renderWallets();
+        showToast(t('trans_success'));
         document.getElementById('trfAmount').value = '';
     }, 50);
 }
 
-// --- TRANSACTIONS LOGIC ---
 function addTransaction() {
     const amt = Number(document.getElementById('tAmount').value);
     const wid = Number(document.getElementById('tWallet').value);
-    const t = { 
-        id: Date.now(), date: document.getElementById('tDate').value, type: document.getElementById('tType').value, 
-        cat: document.getElementById('tCat').value, sub: document.getElementById('tSub').value, 
-        amount: amt, note: document.getElementById('tNote').value, walletId: wid
-    };
-    if(!t.date || !t.amount || !t.cat) return showToast("Incomplete!", "error");
+    const t = { id: Date.now(), date: document.getElementById('tDate').value, type: document.getElementById('tType').value, cat: document.getElementById('tCat').value, sub: document.getElementById('tSub').value, amount: amt, note: document.getElementById('tNote').value, walletId: wid };
+    if(!t.date || !t.amount || !t.cat) return showToast(t('data_incomplete'), "error");
     transactions.push(t); saveData(); renderDashboard(); renderHistory();
     document.getElementById('tAmount').value = ''; showToast("Saved!");
 }
 function deleteTrans(id) { if(confirm('Hapus?')) { transactions = transactions.filter(t => t.id !== id); saveData(); renderDashboard(); renderHistory(); } }
 
-// --- DASHBOARD RENDERER (CORE) ---
 function renderDashboard() {
-    // 1. Calculate Total Balance
     const total = wallets.reduce((acc, w) => acc + getWalletBalance(w.id), 0);
     document.getElementById('saldoDisplay').innerText = fmtMoney(total);
-
-    // 2. Monthly Stats (EXCLUDE TRANSFERS)
     const now = new Date(); const currM = now.toISOString().slice(0,7);
     const inc = transactions.filter(t=>t.type==='income' && t.date.startsWith(currM) && t.cat !== 'Transfer').reduce((a,b)=>a+b.amount,0);
     const exp = transactions.filter(t=>t.type==='expense' && t.date.startsWith(currM) && t.cat !== 'Transfer').reduce((a,b)=>a+b.amount,0);
     document.getElementById('incDisplay').innerText = fmtMoney(inc); 
     document.getElementById('expDisplay').innerText = fmtMoney(exp);
-    
-    // 3. Emergency Fund Logic
     const efData = getEmergencyFundData();
-    document.getElementById('runwayDisplay').innerText = efData.runway.toFixed(1) + " " + t('month'); // Tambahkan translate bulan
-    document.getElementById('avgExpDisplay').innerText = t('avg_txt') + ": " + fmtMoney(efData.avgMonthlyExp); // Tambahkan translate Avg
-
-    // 4. Update Visuals
-    updateMascot(total, efData.runway);
-    renderFunds(); 
-    renderFinancialAnalysis(efData);
-    renderBudgetList();
-    renderCharts(); // Update charts when dashboard renders
+    document.getElementById('runwayDisplay').innerText = efData.runway.toFixed(1) + " " + t('month');
+    document.getElementById('avgExpDisplay').innerText = t('avg_txt') + ": " + fmtMoney(efData.avgMonthlyExp);
+    updateMascot(total, efData.runway); renderFunds(); renderFinancialAnalysis(efData); renderBudgetList(); renderCharts();
 }
 
 function renderFinancialAnalysis(ef) {
-    let status = t('status_risk');
-    let color = "var(--danger)";
+    let status = t('status_risk'); let color = "var(--danger)";
     if (ef.progress >= 100) { status = t('status_ideal'); color = "#0ea5e9"; } 
     else if (ef.progress >= 70) { status = t('status_safe'); color = "var(--secondary)"; } 
     else if (ef.progress >= 30) { status = t('status_ok'); color = "var(--warning)"; }
-
-    document.getElementById('analysisContainer').innerHTML = `
-        <div class="analysis-row"><span>${t('avg_monthly')}</span><b>${fmtMoney(ef.avgMonthlyExp)}</b></div>
-        <div class="analysis-row"><span>${t('current_ef')}</span><b>${fmtMoney(ef.emergencyFund)}</b></div>
-        <div class="analysis-row"><span>${t('target')} (${ef.targetMonths} ${t('month')})</span><b>${fmtMoney(ef.idealFund)}</b></div>
-        <div class="analysis-row"><span>${t('progress')}</span><b style="color:${color}">${ef.progress.toFixed(1)}%</b></div>
-        <div style="margin-top:10px; background:#eee; border-radius:10px; overflow:hidden;"><div style="height:12px; width:${Math.min(100, ef.progress)}%; background:${color};"></div></div>
-        <div class="analysis-row"><span>${t('status')}</span><b style="color:${color}">${status}</b></div>
-    `;
+    document.getElementById('analysisContainer').innerHTML = `<div class="analysis-row"><span>${t('avg_monthly')}</span><b>${fmtMoney(ef.avgMonthlyExp)}</b></div><div class="analysis-row"><span>${t('current_ef')}</span><b>${fmtMoney(ef.emergencyFund)}</b></div><div class="analysis-row"><span>${t('target')} (${ef.targetMonths} ${t('month')})</span><b>${fmtMoney(ef.idealFund)}</b></div><div class="analysis-row"><span>${t('progress')}</span><b style="color:${color}">${ef.progress.toFixed(1)}%</b></div><div style="margin-top:10px; background:#eee; border-radius:10px; overflow:hidden;"><div style="height:12px; width:${Math.min(100, ef.progress)}%; background:${color};"></div></div><div class="analysis-row"><span>${t('status')}</span><b style="color:${color}">${status}</b></div>`;
 }
 
-// --- EDIT TRANSACTION LOGIC ---
+// --- BUG FIX: OPEN EDIT MODAL ---
 function openEditModal(id) {
-    const t = transactions.find(x => x.id === id);
-    if (!t) return;
+    // FIX: rename var to 'trans' to avoid conflict with translation function t()
+    const trans = transactions.find(x => x.id === id); 
+    if (!trans) return;
     
-    // Fill categories first
     const ec = document.getElementById('editCat');
     ec.innerHTML = `<option value="">${t('opt_select')}</option>`; 
     Object.keys(categories).forEach(c=>ec.innerHTML+=`<option value="${c}">${c}</option>`);
     
-    document.getElementById('editId').value = t.id;
-    document.getElementById('editDate').value = t.date;
-    document.getElementById('editType').value = t.type;
-    document.getElementById('editWallet').value = t.walletId || wallets[0].id;
-    document.getElementById('editAmount').value = t.amount;
-    document.getElementById('editCat').value = t.cat;
+    document.getElementById('editId').value = trans.id;
+    document.getElementById('editDate').value = trans.date;
+    document.getElementById('editType').value = trans.type;
+    document.getElementById('editWallet').value = trans.walletId || wallets[0].id;
+    document.getElementById('editAmount').value = trans.amount;
+    document.getElementById('editCat').value = trans.cat;
     
-    updateSub('editCat', 'editSub'); // trigger sub population
-    document.getElementById('editSub').value = t.sub;
-    document.getElementById('editNote').value = t.note;
+    updateSub('editCat', 'editSub');
+    document.getElementById('editSub').value = trans.sub;
+    document.getElementById('editNote').value = trans.note;
 
     document.getElementById('editModal').classList.add('active');
 }
-
-function closeEditModal() {
-    document.getElementById('editModal').classList.remove('active');
-}
-
+function closeEditModal() { document.getElementById('editModal').classList.remove('active'); }
 function saveEditTransaction() {
     const id = Number(document.getElementById('editId').value);
     const tIndex = transactions.findIndex(x => x.id === id);
     if (tIndex === -1) return;
-
     transactions[tIndex] = {
         id: id,
         date: document.getElementById('editDate').value,
@@ -1284,44 +1205,20 @@ function saveEditTransaction() {
         sub: document.getElementById('editSub').value,
         note: document.getElementById('editNote').value
     };
-
-    saveData();
-    closeEditModal();
-    renderDashboard();
-    renderHistory();
-    showToast("Updated!");
+    saveData(); closeEditModal(); renderDashboard(); renderHistory(); showToast("Updated!");
 }
 
 // --- PDF DOWNLOAD ---
 function downloadPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
+    const { jsPDF } = window.jspdf; const doc = new jsPDF();
     let d = transactions.sort((a,b)=>new Date(b.date)-new Date(a.date));
-
-    doc.setFontSize(18);
-    doc.text("Laporan Keuangan", 14, 22);
-    doc.setFontSize(11);
-    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 30);
-
-    const tableData = d.map(t => [
-        t.date,
-        t.cat,
-        t.sub,
-        t.note,
-        (t.type === 'income' ? '+' : '-') + fmtMoney(t.amount)
-    ]);
-
-    doc.autoTable({
-        startY: 35,
-        head: [['Tanggal', 'Kategori', 'Sub', 'Catatan', 'Nominal']],
-        body: tableData,
-    });
-
+    doc.setFontSize(18); doc.text("Laporan Keuangan", 14, 22);
+    doc.setFontSize(11); doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 30);
+    const tableData = d.map(t => [ t.date, t.cat, t.sub, t.note, (t.type === 'income' ? '+' : '-') + fmtMoney(t.amount) ]);
+    doc.autoTable({ startY: 35, head: [['Tanggal', 'Kategori', 'Sub', 'Catatan', 'Nominal']], body: tableData });
     doc.save(`Laporan_KeuanganKu_${new Date().toISOString().slice(0,10)}.pdf`);
 }
 
-// --- HISTORY RENDER ---
 function renderHistory() {
     const key = document.getElementById('searchKeyword').value.toLowerCase();
     const type = document.getElementById('searchType').value;
@@ -1334,29 +1231,138 @@ function renderHistory() {
     if(end) d = d.filter(t => t.date <= end);
     document.querySelector('#historyTable tbody').innerHTML = d.slice(0, 50).map(t => {
         const w = wallets.find(x => x.id === t.walletId) || wallets[0];
-        return `<tr>
-            <td class="text-sm">${t.date}</td>
-            <td><b>${t.cat}</b><br><small class="text-sm">${t.sub||''} (${w.name})</small><div style="font-size:0.8rem; opacity:0.7">${t.note||''}</div></td>
-            <td style="font-weight:bold; color:${t.type==='income'?'var(--secondary)':'var(--danger)'}">${t.type==='income'?'+':'-'} ${fmtMoney(t.amount)}</td>
-            <td>
-                <div style="display:flex; gap:5px;">
-                    <button onclick="openEditModal(${t.id})" class="btn-sm btn-outline" title="Edit">✏️</button>
-                    <button onclick="deleteTrans(${t.id})" class="btn-danger btn-sm" title="Hapus">×</button>
-                </div>
-            </td>
-        </tr>`
+        return `<tr><td class="text-sm">${t.date}</td><td><b>${t.cat}</b><br><small class="text-sm">${t.sub||''} (${w.name})</small><div style="font-size:0.8rem; opacity:0.7">${t.note||''}</div></td><td style="font-weight:bold; color:${t.type==='income'?'var(--secondary)':'var(--danger)'}">${t.type==='income'?'+':'-'} ${fmtMoney(t.amount)}</td><td><div style="display:flex; gap:5px;"><button onclick="openEditModal(${t.id})" class="btn-sm btn-outline" title="Edit">✏️</button><button onclick="deleteTrans(${t.id})" class="btn-danger btn-sm" title="Hapus">×</button></div></td></tr>`
     }).join('');
 }
 
-// --- DEBTS, SUBS, FUNDS ---
-function addDebt() { const name = document.getElementById('dName').value; const amount = Number(document.getElementById('dAmount').value); if(!name || !amount) return showToast("Incomplete!", "error"); debts.push({ id: Date.now(), name, amount, type: document.getElementById('dType').value, paid: false, date: new Date().toISOString().slice(0,10) }); localStorage.setItem('debts', JSON.stringify(debts)); renderDebts(); }
-function toggleDebtPaid(id) { const d = debts.find(x => x.id === id); if(d && !d.paid && confirm("Paid? Record to transaction?")) { transactions.push({ id:Date.now(), date:new Date().toISOString().split('T')[0], type:d.type==='receivable'?'income':'expense', cat:'Hutang/Piutang', sub:d.type==='receivable'?'Terima Piutang':'Bayar Hutang', amount:d.amount, note:`Lunas: ${d.name}`, walletId: wallets[0].id }); saveData(); } if(d) { d.paid = !d.paid; localStorage.setItem('debts', JSON.stringify(debts)); renderDebts(); } }
+// --- DEBTS, SUBS, FUNDS (UPDATED) ---
+// Fix: Add Debt now includes transaction recording with Wallet
+function addDebt() { 
+    const name = document.getElementById('dName').value; 
+    const amount = Number(document.getElementById('dAmount').value); 
+    const type = document.getElementById('dType').value;
+    const wid = Number(document.getElementById('dWallet').value);
+    
+    if(!name || !amount || !wid) return showToast(t('data_incomplete'), "error");
+    
+    // 1. Create Debt Entry
+    const newDebt = { id: Date.now(), name, amount, type, paid: false, date: new Date().toISOString().slice(0,10), walletId: wid };
+    debts.push(newDebt);
+    
+    // 2. Create Transaction (Cash Flow)
+    // Receivable (Piutang) = Money Out (Expense), Payable (Hutang) = Money In (Income)
+    transactions.push({
+        id: Date.now() + 1,
+        date: newDebt.date,
+        type: type === 'receivable' ? 'expense' : 'income',
+        cat: 'Hutang/Piutang',
+        sub: type === 'receivable' ? 'Piutang' : 'Hutang',
+        amount: amount,
+        note: (type === 'receivable' ? 'Pinjamkan ke ' : 'Pinjam dari ') + name,
+        walletId: wid
+    });
+
+    saveData(); 
+    localStorage.setItem('debts', JSON.stringify(debts)); 
+    renderDebts(); renderDashboard(); renderHistory();
+    showToast(t('debt_saved'));
+}
+
+// Fix: Settle Debt now asks for Wallet via Prompt
+function settleDebt(id) { 
+    const d = debts.find(x => x.id === id); 
+    if(d && !d.paid) {
+        // Build prompt string
+        const wList = wallets.map((w, i) => `${i+1}. ${w.name}`).join('\n');
+        const input = prompt(t('settle_prompt') + "\n" + wList, "1");
+        
+        if (input) {
+            const wIndex = parseInt(input) - 1;
+            if (wallets[wIndex]) {
+                const selectedWallet = wallets[wIndex];
+                
+                // Record Transaction
+                // Pay Debt (Payable) = Expense, Receive Debt (Receivable) = Income
+                transactions.push({ 
+                    id:Date.now(), 
+                    date:new Date().toISOString().split('T')[0], 
+                    type: d.type==='receivable' ? 'income' : 'expense', 
+                    cat:'Hutang/Piutang', 
+                    sub: d.type==='receivable' ? 'Terima Piutang' : 'Bayar Hutang', 
+                    amount: d.amount, 
+                    note:`Lunas: ${d.name}`, 
+                    walletId: selectedWallet.id 
+                }); 
+                
+                d.paid = true; 
+                saveData(); 
+                localStorage.setItem('debts', JSON.stringify(debts)); 
+                renderDebts(); renderDashboard(); renderHistory();
+                showToast(t('settle_saved'));
+            } else {
+                alert(t('wallet_invalid'));
+            }
+        }
+    } 
+}
+
 function deleteDebt(id) { if(confirm('Delete?')) { debts=debts.filter(x=>x.id!==id); localStorage.setItem('debts', JSON.stringify(debts)); renderDebts(); } }
-function renderDebts() { const rec = debts.filter(d=>d.type==='receivable'&&!d.paid).reduce((a,b)=>a+b.amount,0); const pay = debts.filter(d=>d.type==='payable'&&!d.paid).reduce((a,b)=>a+b.amount,0); document.getElementById('totalReceivable').innerText = fmtMoney(rec); document.getElementById('totalPayable').innerText = fmtMoney(pay); document.getElementById('debtsList').innerHTML = debts.sort((a,b)=>a.paid-b.paid).map(d => `<div class="card" style="padding:15px; border:2px solid ${d.paid?'#dfe6e9':(d.type==='receivable'?'var(--secondary)':'var(--danger)')}; opacity:${d.paid?0.6:1}"><div class="flex-between"><b>${d.name}</b> <span class="badge" style="background:${d.paid?'#b2bec3':(d.type==='receivable'?'var(--secondary)':'var(--danger)')}; color:white">${d.paid?t('status_paid'):(d.type==='receivable'?t('short_receivable'):t('short_payable'))}</span></div><div class="text-xl" style="margin:5px 0">${fmtMoney(d.amount)}</div><div class="text-sm">${d.date}</div><div style="margin-top:10px; display:flex; gap:5px"><button onclick="toggleDebtPaid(${d.id})" class="btn-sm btn-outline">✅ OK</button><button onclick="deleteDebt(${d.id})" class="btn-sm btn-danger">🗑️</button></div></div>`).join(''); }
+
+function renderDebts() { 
+    const rec = debts.filter(d=>d.type==='receivable'&&!d.paid).reduce((a,b)=>a+b.amount,0); 
+    const pay = debts.filter(d=>d.type==='payable'&&!d.paid).reduce((a,b)=>a+b.amount,0); 
+    document.getElementById('totalReceivable').innerText = fmtMoney(rec); 
+    document.getElementById('totalPayable').innerText = fmtMoney(pay); 
+    document.getElementById('debtsList').innerHTML = debts.sort((a,b)=>a.paid-b.paid).map(d => `
+        <div class="card" style="padding:15px; border:2px solid ${d.paid?'#dfe6e9':(d.type==='receivable'?'var(--secondary)':'var(--danger)')}; opacity:${d.paid?0.6:1}">
+            <div class="flex-between"><b>${d.name}</b> <span class="badge" style="background:${d.paid?'#b2bec3':(d.type==='receivable'?'var(--secondary)':'var(--danger)')}; color:white">${d.paid?t('status_paid'):(d.type==='receivable'?t('short_receivable'):t('short_payable'))}</span></div>
+            <div class="text-xl" style="margin:5px 0">${fmtMoney(d.amount)}</div>
+            <div class="text-sm">${d.date}</div>
+            <div style="margin-top:10px; display:flex; gap:5px">
+                ${!d.paid ? `<button onclick="settleDebt(${d.id})" class="btn-sm btn-outline">${t('mark_paid')}</button>` : `<button disabled class="btn-sm btn-outline">${t('mark_ok')}</button>`}
+                <button onclick="deleteDebt(${d.id})" class="btn-sm btn-danger">🗑️</button>
+            </div>
+        </div>`).join(''); 
+}
+
 function addSub() { const n = document.getElementById('sName').value; const a = Number(document.getElementById('sAmount').value); if(n&&a) { subs.push({id:Date.now(), name:n, amount:a, cycle:document.getElementById('sCycle').value}); localStorage.setItem('subs',JSON.stringify(subs)); renderSubs(); }}
-function paySub(id) { const s = subs.find(x=>x.id===id); if(s && confirm(`Pay ${s.name}?`)) { transactions.push({id:Date.now(), date:new Date().toISOString().split('T')[0], type:'expense', cat:'Kebutuhan', sub:'Langganan', amount:s.amount, note:s.name, walletId:wallets[0].id}); saveData(); showToast("Paid!"); }}
+
+// Fix: Pay Sub now reads from dropdown
+function paySub(id) { 
+    const s = subs.find(x=>x.id===id); 
+    const wid = Number(document.getElementById(`subWallet-${id}`).value);
+    
+    if(s && confirm(t('pay_confirm') + ` ${s.name}?`)) { 
+        transactions.push({
+            id:Date.now(), 
+            date:new Date().toISOString().split('T')[0], 
+            type:'expense', 
+            cat:'Kebutuhan', 
+            sub:'Langganan', 
+            amount:s.amount, 
+            note:s.name, 
+            walletId: wid
+        }); 
+        saveData(); showToast("Terbayar!"); renderDashboard(); renderHistory();
+    }
+}
+
 function deleteSub(id) { if(confirm('Delete?')) { subs=subs.filter(x=>x.id!==id); localStorage.setItem('subs',JSON.stringify(subs)); renderSubs(); }}
-function renderSubs() { document.getElementById('subsList').innerHTML = subs.map(s => `<div class="card" style="padding:15px; text-align:center"><b>${s.name}</b><div class="text-xl" style="color:var(--primary)">${fmtMoney(s.amount)}</div><div class="text-sm">/${s.cycle==='1'?'Mo':'Yr'}</div><button onclick="paySub(${s.id})" class="btn-success btn-block" style="margin-top:10px">Bayar</button><button onclick="deleteSub(${s.id})" class="btn-danger btn-block" style="margin-top:5px">Hapus</button></div>`).join(''); }
+
+// Fix: Render Subs includes Wallet Dropdown
+function renderSubs() { 
+    const wOpts = wallets.map(w => `<option value="${w.id}">${w.icon} ${w.name}</option>`).join('');
+    document.getElementById('subsList').innerHTML = subs.map(s => `
+        <div class="card" style="padding:15px; text-align:center">
+            <b>${s.name}</b>
+            <div class="text-xl" style="color:var(--primary)">${fmtMoney(s.amount)}</div>
+            <div class="text-sm">/${s.cycle==='1'?'Mo':'Yr'}</div>
+            <select id="subWallet-${s.id}" style="margin-top:5px; font-size:0.8rem">${wOpts}</select>
+            <button onclick="paySub(${s.id})" class="btn-success btn-block" style="margin-top:5px">${t('pay_btn')}</button>
+            <button onclick="deleteSub(${s.id})" class="btn-danger btn-block" style="margin-top:5px">${t('del_btn')}</button>
+        </div>`).join(''); 
+}
+
 function toggleFundForm() { document.getElementById('fundForm').style.display = document.getElementById('fundForm').style.display==='none'?'block':'none'; }
 function addFund() { const n=document.getElementById('fundName').value; const t=Number(document.getElementById('fundTarget').value); if(n&&t){ funds.push({id:Date.now(), name:n, target:t, current:0}); localStorage.setItem('sinkingFunds',JSON.stringify(funds)); renderFunds(); toggleFundForm(); }}
 function deleteFund(id) { if(confirm('Hapus?')) { funds=funds.filter(x=>x.id!==id); localStorage.setItem('sinkingFunds',JSON.stringify(funds)); renderFunds(); }}
@@ -1364,12 +1370,10 @@ function deleteFund(id) { if(confirm('Hapus?')) { funds=funds.filter(x=>x.id!==i
 // --- CHARTS & FILTERS ---
 function populateChartFilters() {
     const mSel = document.getElementById('filterMonth'); const ySel = document.getElementById('filterYear');
-    const months = translations[currentLang].months_arr; // AMBIL DARI TRANSLATION
+    const months = translations[currentLang].months_arr;
     const now = new Date();
-    
     mSel.innerHTML = ""; ySel.innerHTML = "";
     mSel.innerHTML = months.map((m,i) => `<option value="${i}" ${i===now.getMonth()?'selected':''}>${m}</option>`).join('');
-    
     const cy = now.getFullYear();
     for(let i=cy-2; i<=cy+1; i++) { ySel.innerHTML += `<option value="${i}" ${i===cy?'selected':''}>${i}</option>`; }
 }
@@ -1377,36 +1381,21 @@ let charts = {};
 function renderCharts() {
     const mVal = parseInt(document.getElementById('filterMonth').value);
     const yVal = parseInt(document.getElementById('filterYear').value);
-    
     const getData = (filterFn) => { const d={}; transactions.filter(t=>t.type==='expense' && t.cat !== 'Transfer' && filterFn(t)).forEach(t=>d[t.cat]=(d[t.cat]||0)+t.amount); return d; };
     const pieConfig = (d) => ({
         type: 'doughnut', data: { labels: Object.keys(d), datasets:[{ data:Object.values(d), backgroundColor:['#6366f1','#ec4899','#10b981','#f59e0b','#3b82f6', '#8b5cf6'], borderWidth:0 }] },
         options: { responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{ legend:{display:false}, datalabels: { color: '#fff', font: { weight: 'bold', size: 10 }, formatter: (value, ctx) => { let sum = 0; ctx.chart.data.datasets[0].data.map(data => sum += data); return (value*100 / sum).toFixed(0)+"%"; } } } }
     });
-    
     const dMonthly = getData(t => { const d = new Date(t.date); return d.getMonth() === mVal && d.getFullYear() === yVal; });
     if(charts['monthly']) charts['monthly'].destroy(); charts['monthly'] = new Chart(document.getElementById('chartMonthly'), pieConfig(dMonthly));
-    
     const dYearly = getData(t => { const d = new Date(t.date); return d.getFullYear() === yVal; });
     if(charts['yearly']) charts['yearly'].destroy(); charts['yearly'] = new Chart(document.getElementById('chartYearly'), pieConfig(dYearly));
-    
     const ctxA = document.getElementById('chartAnnual'); 
     const labels=['J','F','M','A','M','J','J','A','S','O','N','D'];
     const iD=Array(12).fill(0), eD=Array(12).fill(0);
     transactions.forEach(t=>{ const d=new Date(t.date); if(d.getFullYear()===yVal && t.cat !== 'Transfer'){ if(t.type==='income') iD[d.getMonth()]+=t.amount; else eD[d.getMonth()]+=t.amount; } });
-    
     if(charts['annual']) charts['annual'].destroy(); 
-    charts['annual'] = new Chart(ctxA, { 
-        type:'bar', 
-        data:{
-            labels:labels, 
-            datasets:[
-                {label: t('income'), data:iD, backgroundColor:'#10b981', borderRadius:5}, 
-                {label: t('expense'), data:eD, backgroundColor:'#ff6b6b', borderRadius:5}
-            ]
-        }, 
-        options:{responsive:true, maintainAspectRatio:false, scales:{x:{grid:{display:false}},y:{grid:{display:false}}}, plugins:{legend:{display:false}, datalabels:{display:false}}} 
-    });
+    charts['annual'] = new Chart(ctxA, { type:'bar', data:{labels:labels, datasets:[{label: t('income'), data:iD, backgroundColor:'#10b981', borderRadius:5}, {label: t('expense'), data:eD, backgroundColor:'#ff6b6b', borderRadius:5}]}, options:{responsive:true, maintainAspectRatio:false, scales:{x:{grid:{display:false}},y:{grid:{display:false}}}, plugins:{legend:{display:false}, datalabels:{display:false}}} });
 }
 
 function renderBudgetList() {
@@ -1421,149 +1410,56 @@ function renderBudgetList() {
 function deleteBudget(month, subCat) { if(confirm(`Delete ${subCat}?`)) { delete budgets[month][subCat]; localStorage.setItem('budgets', JSON.stringify(budgets)); renderBudgetList(); } }
 function editBudget(month, subCat) { const oldVal = budgets[month][subCat]; const newVal = prompt(`Limit ${subCat}:`, oldVal); if(newVal && !isNaN(newVal)) { budgets[month][subCat] = Number(newVal); localStorage.setItem('budgets', JSON.stringify(budgets)); renderBudgetList(); } }
 
-// --- NEW & IMPROVED TABUNGAN IMPIAN LOGIC ---
 function renderFunds() { 
     document.getElementById('fundsList').innerHTML = funds.map(f => { 
         const pct = Math.min(100, Math.round(f.current/f.target*100)); 
-        return `
-        <div class="card" style="padding:15px; border:2px solid #0ea5e9;">
-            <div class="flex-between"><b>${f.name}</b> <small>${pct}%</small></div>
-            <div style="background:#eee; height:8px; border-radius:4px; margin:5px 0">
-                <div style="width:${pct}%; height:100%; background:#0ea5e9; border-radius:4px;"></div>
-            </div>
-            <div class="text-sm">${fmtMoney(f.current)} / ${fmtMoney(f.target)}</div>
-            <div style="margin-top:10px; display:flex; gap:5px">
-                <button onclick="openNabungModal(${f.id})" class="btn-sm btn-success" style="flex:1">${t('modal_nabung')}</button>
-                <button onclick="deleteFund(${f.id})" class="btn-sm btn-danger">×</button>
-            </div>
-        </div>`; 
+        return `<div class="card" style="padding:15px; border:2px solid #0ea5e9;"><div class="flex-between"><b>${f.name}</b> <small>${pct}%</small></div><div style="background:#eee; height:8px; border-radius:4px; margin:5px 0"><div style="width:${pct}%; height:100%; background:#0ea5e9; border-radius:4px;"></div></div><div class="text-sm">${fmtMoney(f.current)} / ${fmtMoney(f.target)}</div><div style="margin-top:10px; display:flex; gap:5px"><button onclick="openNabungModal(${f.id})" class="btn-sm btn-success" style="flex:1">${t('modal_nabung')}</button><button onclick="deleteFund(${f.id})" class="btn-sm btn-danger">×</button></div></div>`; 
     }).join(''); 
-    
     document.getElementById('totalFundsDisplay').innerText = fmtMoney(funds.reduce((a,b)=>a+b.current,0)); 
 }
-
 function openNabungModal(id) {
-    const f = funds.find(x => x.id === id);
-    if(!f) return;
-    
+    const f = funds.find(x => x.id === id); if(!f) return;
     document.getElementById('nabungFundId').value = id;
     document.getElementById('nabungTitle').innerText = `Target: ${f.name}`;
     document.getElementById('nabungAmount').value = '';
-    
-    refreshWalletsDropdown(); 
-    document.getElementById('nabungModal').classList.add('active');
+    refreshWalletsDropdown(); document.getElementById('nabungModal').classList.add('active');
 }
-
 function processNabung() {
     const id = Number(document.getElementById('nabungFundId').value);
     const amount = Number(document.getElementById('nabungAmount').value);
     const sourceWalletId = Number(document.getElementById('nabungSourceWallet').value);
     const targetWalletId = Number(document.getElementById('nabungTargetWallet').value); 
-
-    // 1. Validasi
     if (!amount || amount <= 0) return showToast("Nominal tidak valid!", "error");
     if (!sourceWalletId) return showToast("Pilih dompet sumber!", "error");
     if (!targetWalletId) return showToast("Pilih dompet tujuan!", "error");
-    
-    // Cek saldo cukup atau tidak
     const currentBal = getWalletBalance(sourceWalletId);
     if (currentBal < amount) return showToast("Saldo dompet sumber kurang!", "error");
-
     const fund = funds.find(x => x.id === id);
     const wTarget = wallets.find(w => w.id === targetWalletId);
-
-    // 2. Update Progress Bar Tabungan Impian
     fund.current += amount;
-
-    // 3. Catat Transaksi KELUAR dari Dompet Sumber
-    const transOut = {
-        id: Date.now(),
-        date: new Date().toISOString().split('T')[0],
-        type: 'expense',
-        cat: 'Transfer',
-        sub: 'Keluar',
-        amount: amount,
-        note: `Pindah ke tabungan: ${fund.name}`,
-        walletId: sourceWalletId
-    };
-    transactions.push(transOut);
-
-    // 4. Catat Transaksi MASUK ke Dompet Tujuan (Agar saldo bertambah)
+    transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], type: 'expense', cat: 'Transfer', sub: 'Keluar', amount: amount, note: `Pindah ke tabungan: ${fund.name}`, walletId: sourceWalletId });
     setTimeout(() => {
-        const transIn = {
-            id: Date.now() + 10,
-            date: new Date().toISOString().split('T')[0],
-            type: 'income',
-            cat: 'Tabungan',        // Masuk kategori Tabungan agar terdeteksi di chart
-            sub: fund.name,         // Sub kategori nama barangnya
-            amount: amount,
-            note: `Setoran: ${fund.name}`,
-            walletId: targetWalletId
-        };
-        transactions.push(transIn);
-
-        // 5. Simpan & Refresh Semua
-        localStorage.setItem('sinkingFunds', JSON.stringify(funds));
-        saveData(); 
-
+        transactions.push({ id: Date.now() + 10, date: new Date().toISOString().split('T')[0], type: 'income', cat: 'Tabungan', sub: fund.name, amount: amount, note: `Setoran: ${fund.name}`, walletId: targetWalletId });
+        localStorage.setItem('sinkingFunds', JSON.stringify(funds)); saveData(); 
         document.getElementById('nabungModal').classList.remove('active');
-        renderFunds();
-        renderDashboard(); 
-        renderHistory();
-        
+        renderFunds(); renderDashboard(); renderHistory();
         showToast(`Berhasil ditabung ke ${wTarget.name}!`);
     }, 50);
 }
 
-
-// --- EMERGENCY FUND SMART LOGIC ---
-function openEmergencyModal() {
-    document.getElementById('emergencyModal').classList.add('active');
-    refreshWalletsDropdown();
-}
-
+function openEmergencyModal() { document.getElementById('emergencyModal').classList.add('active'); refreshWalletsDropdown(); }
 function processEmergencyFund() {
     const amt = Number(document.getElementById('emgAmount').value);
     const srcW = Number(document.getElementById('emgSourceWallet').value);
     const tgtW = Number(document.getElementById('emgTargetWallet').value);
-
     if(amt <= 0 || !srcW || !tgtW) return showToast("Data tidak lengkap", "error");
-
-    // 1. Transfer Out from Source
-    transactions.push({
-        id: Date.now(), 
-        date: new Date().toISOString().split('T')[0],
-        type: 'expense', 
-        cat: 'Transfer', 
-        sub: 'Keluar', 
-        amount: amt, 
-        note: 'Isi Dana Darurat', 
-        walletId: srcW
-    });
-
-    // 2. Income to Target (SPECIFIC CATEGORY)
-    // This is the "Smart" part: It categorizes as Tabungan > Dana Darurat so the chart picks it up
+    transactions.push({ id: Date.now(), date: new Date().toISOString().split('T')[0], type: 'expense', cat: 'Transfer', sub: 'Keluar', amount: amt, note: 'Isi Dana Darurat', walletId: srcW });
     setTimeout(() => {
-        transactions.push({
-            id: Date.now() + 1, 
-            date: new Date().toISOString().split('T')[0],
-            type: 'income', 
-            cat: 'Tabungan', 
-            sub: 'Dana Darurat', 
-            amount: amt, 
-            note: 'Setoran Dana Darurat', 
-            walletId: tgtW
-        });
-        
-        saveData();
-        renderDashboard();
-        document.getElementById('emergencyModal').classList.remove('active');
-        showToast("Dana Darurat Terisi!");
+        transactions.push({ id: Date.now() + 1, date: new Date().toISOString().split('T')[0], type: 'income', cat: 'Tabungan', sub: 'Dana Darurat', amount: amt, note: 'Setoran Dana Darurat', walletId: tgtW });
+        saveData(); renderDashboard(); document.getElementById('emergencyModal').classList.remove('active'); showToast("Dana Darurat Terisi!");
     }, 50);
 }
 
-
-// --- STANDARD FUNCTIONS ---
 function refreshCats() { 
     ['tCat','bCat','parentCatSelect','delCatSelect', 'editCat', 'delSubParent'].forEach(id=>{ 
         const el=document.getElementById(id); 
@@ -1574,37 +1470,22 @@ function refreshCats() {
     }); 
 }
 
-// --- FUNGSI UPDATE SUB DIPERBAIKI ---
 function updateSub(c,s) { 
-    const v=document.getElementById(c).value; 
-    const el=document.getElementById(s); 
-    
-    // Kosongkan opsi sebelumnya
+    const v=document.getElementById(c).value; const el=document.getElementById(s); 
     el.innerHTML = "";
-    
-    // Langsung isi dengan sub kategori tanpa placeholder "Sub Kategori..."
     if(categories[v] && categories[v].length > 0) {
-        categories[v].forEach(i => {
-            el.innerHTML += `<option value="${i}">${i}</option>`; 
-        });
-    } else {
-        // Jika tidak ada sub kategori (atau kategori belum dipilih), beri tanda strip
-        el.innerHTML = `<option value="">-</option>`;
-    }
+        categories[v].forEach(i => { el.innerHTML += `<option value="${i}">${i}</option>`; });
+    } else { el.innerHTML = `<option value="">-</option>`; }
 }
 
 function addNewCategory() { const n=document.getElementById('newCatName').value; if(n&&!categories[n]){categories[n]=[]; localStorage.setItem('myCategories',JSON.stringify(categories)); refreshCats(); showToast("Success!");} }
 function addNewSubCategory() { const p=document.getElementById('parentCatSelect').value; const s=document.getElementById('newSubName').value; if(p&&s){categories[p].push(s); localStorage.setItem('myCategories',JSON.stringify(categories)); showToast("Success!");} }
 function deleteCategory() { const n=document.getElementById('delCatSelect').value; if(n && confirm('Delete?')) { delete categories[n]; localStorage.setItem('myCategories',JSON.stringify(categories)); refreshCats(); showToast("Deleted!"); } }
 function deleteSubCategory() { 
-    const p = document.getElementById('delSubParent').value;
-    const s = document.getElementById('delSubSelect').value;
+    const p = document.getElementById('delSubParent').value; const s = document.getElementById('delSubSelect').value;
     if(p && s && confirm(`Hapus ${s}?`)) {
         categories[p] = categories[p].filter(item => item !== s);
-        localStorage.setItem('myCategories', JSON.stringify(categories));
-        refreshCats();
-        updateSub('delSubParent', 'delSubSelect'); // clear the deleted one
-        showToast("Sub Deleted!");
+        localStorage.setItem('myCategories', JSON.stringify(categories)); refreshCats(); updateSub('delSubParent', 'delSubSelect'); showToast("Sub Deleted!");
     }
 }
 function setBudget() { const m=document.getElementById('bMonth').value; const s=document.getElementById('bSub').value; const a=Number(document.getElementById('bAmount').value); if(m&&s&&a) { if(!budgets[m]) budgets[m]={}; budgets[m][s]=a; localStorage.setItem('budgets',JSON.stringify(budgets)); renderDashboard(); showToast("Set!"); } }
