@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KeuanganKu V2.16 - Mobile Fix (.bin)</title>
+    <title>KeuanganKu V2.17 - Auto BIN</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -543,9 +543,9 @@
             <h3 data-i18n="backup">🛡️ Backup Data</h3>
             <div class="grid-2">
                 <button onclick="backupData()" class="btn-outline" data-i18n="save">💾 Simpan (.bin)</button>
-                <button onclick="document.getElementById('fileInput').click()" class="btn-outline" data-i18n="open">📂 Buka (.json/.bin)</button>
+                <button onclick="document.getElementById('fileInput').click()" class="btn-outline" data-i18n="open">📂 Buka (.bin)</button>
             </div>
-            <input type="file" id="fileInput" accept=".json,.bin" onchange="restoreData(this)">
+            <input type="file" id="fileInput" accept=".bin,.json" onchange="restoreData(this)">
         </div>
     </div>
 
@@ -637,7 +637,7 @@ const translations = {
         
         // --- SETTINGS ---
         nickname: "Nama Panggilan", personalization: "🌍 Personalisasi & Bahasa", language: "Bahasa / Language", currency: "Mata Uang / Currency", custom_bg: "Background Kostum", theme: "🎨 Tema Warna",
-        data_manage: "⚙️ Kelola Data", add_cat: "Tambah Kategori", del_cat: "Hapus Kategori", add_sub: "Tambah Sub", del_sub: "Hapus Sub Kategori", backup: "🛡️ Backup Data", save: "💾 Simpan (.json)", open: "📂 Buka (.json)",
+        data_manage: "⚙️ Kelola Data", add_cat: "Tambah Kategori", del_cat: "Hapus Kategori", add_sub: "Tambah Sub", del_sub: "Hapus Sub Kategori", backup: "🛡️ Backup Data", save: "💾 Simpan (.bin)", open: "📂 Buka (.bin)",
         
         // --- MASCOT & ALERTS ---
         mascot_hi: "Halo", mascot_warn: "Hati-hati", mascot_cool: "Mode Sultan", mascot_danger: "Gawat",
@@ -688,7 +688,7 @@ const translations = {
         subs_routine: "🔄 Subscriptions", subs_desc: "Don't forget Netflix/Wifi bills!", month: "Month", year: "Year",
         
         nickname: "Nickname", personalization: "🌍 Personalization & Language", language: "Bahasa / Language", currency: "Mata Uang / Currency", custom_bg: "Custom Background", theme: "🎨 Color Theme",
-        data_manage: "⚙️ Manage Data", add_cat: "Add Category", del_cat: "Delete Category", add_sub: "Add Sub-Category", del_sub: "Delete Sub-Category", backup: "🛡️ Backup Data", save: "💾 Save (.json)", open: "📂 Open (.json)",
+        data_manage: "⚙️ Manage Data", add_cat: "Add Category", del_cat: "Delete Category", add_sub: "Add Sub-Category", del_sub: "Delete Sub-Category", backup: "🛡️ Backup Data", save: "💾 Save (.bin)", open: "📂 Open (.bin)",
         
         mascot_hi: "Hello", mascot_warn: "Careful", mascot_cool: "Sultan Mode", mascot_danger: "Alert",
         msg_balance: "Ready to manage money?", msg_warn: "Emergency funds running low.", msg_cool: "Financial health is great.", msg_danger: "Balance negative, stop spending!",
@@ -738,7 +738,7 @@ const translations = {
         subs_routine: "🔄 定期订阅", subs_desc: "别忘了视频会员或宽带费用!", month: "月", year: "年",
         
         nickname: "昵称", personalization: "🌍 个性化与语言", language: "Bahasa / Language", currency: "Mata Uang / Currency", custom_bg: "自定义背景", theme: "🎨 色彩主题",
-        data_manage: "⚙️ 数据管理", add_cat: "添加类别", del_cat: "删除类别", add_sub: "添加子类别", del_sub: "删除子类别", backup: "🛡️ 备份数据", save: "💾 保存 (.json)", open: "📂 打开 (.json)",
+        data_manage: "⚙️ 数据管理", add_cat: "添加类别", del_cat: "删除类别", add_sub: "添加子类别", del_sub: "删除子类别", backup: "🛡️ 备份数据", save: "💾 保存 (.bin)", open: "📂 打开 (.bin)",
         
         mascot_hi: "你好", mascot_warn: "注意", mascot_cool: "土豪模式", mascot_danger: "警告",
         msg_balance: "准备好理财了吗?", msg_warn: "应积极进步组。", msg_cool: "财务状况非常健康。", msg_danger: "余额为负，停止消费！",
