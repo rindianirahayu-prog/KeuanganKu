@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KeuanganKu V8.5 (Full Integrated)</title>
+    <title>KeuanganKu V2.0</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,21 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
-    <style>
-/* Cari bagian ini di dalam <style> dan tambahkan margin-bottom */
-.card { 
-    background: var(--bg-card); 
-    padding: 15px; 
-    border-radius: var(--radius); 
-    border: 2px solid transparent; 
-    box-shadow: var(--shadow); 
-    transition: .3s;
-    position: relative; 
-    overflow: hidden;
-    
-    /* TAMBAHKAN INI AGAR ADA JARAK ANTAR KARTU */
-    margin-bottom: 10px; 
-}
+<style>
         :root {
             --hue: 250; 
             --primary: hsl(var(--hue), 80%, 60%);
@@ -100,6 +86,7 @@
             background: var(--bg-card); padding: 25px; border-radius: var(--radius); 
             border: 2px solid transparent; box-shadow: var(--shadow); transition: .3s;
             position: relative; overflow: hidden;
+            margin-bottom: 10px;
         }
         h3 { margin: 0 0 15px 0; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
 
@@ -112,7 +99,7 @@
         .btn-danger { background: var(--danger); } .btn-success { background: var(--secondary); }
         .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 12px; }
         .btn-icon { width: 40px; height: 40px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; }
-        .btn-block { width: 100%; }
+        .btn-block { width: 100%; display: block; }
         
         input, select { 
             width: 100%; padding: 12px 15px; border-radius: 16px; border: 2px solid var(--border); 
@@ -193,7 +180,7 @@
     </div>
     <div class="nav-tabs">
         <div class="nav-item active" id="tab-dashboard" onclick="switchView('dashboard')" data-i18n="nav_home">🏠 Home</div>
-        <div class="nav-item" id="tab-analytics" onclick="switchView('analytics')">📊 Analisis</div>
+        <div class="nav-item" id="tab-analytics" onclick="switchView('analytics')"data-i18n="nav_analytics">📊 Analisis</div>
         <div class="nav-item" id="tab-wallets" onclick="switchView('wallets')" data-i18n="nav_wallet">👜 Dompet</div>
         <div class="nav-item" id="tab-transactions" onclick="switchView('transactions')" data-i18n="nav_record">📝 Catat</div>
         <div class="nav-item" id="tab-debts" onclick="switchView('debts')" data-i18n="nav_debt">📒 Hutang</div>
@@ -225,14 +212,13 @@
             </div>
             <div class="card" style="border-bottom: 4px solid var(--warning);">
                 <div class="flex-between">
-                    <div>
-                        <div class="text-sm" data-i18n="runway">Nafas Darurat 🌬️</div>
-                        <div id="runwayDisplay" class="text-xl" style="color:var(--warning)">0 Bulan</div>
-                        <small id="avgExpDisplay" class="text-sm">Avg: 0</small>
-                    </div>
-                    <button onclick="openEmergencyModal()" class="btn-sm" title="Isi Dana Darurat" style="background:var(--warning); color:#333; font-size:1.2rem; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center;">+</button>
+                    <div class="text-sm" data-i18n="runway">Nafas Darurat 🌬️</div>
+                    <button onclick="openEmergencyModal()" class="btn-sm" title="Isi Dana Darurat" style="background:var(--warning); color:#333; width:30px; height:30px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center;">+</button>
                 </div>
+                <div id="runwayDisplay" class="text-xl" style="color:var(--warning)">0 Bulan</div>
+                <small id="avgExpDisplay" class="text-sm">Avg: 0</small>
             </div>
+
             <div class="card" style="border-bottom: 4px solid #0ea5e9;">
                 <div class="text-sm" data-i18n="dream_fund">Tabungan Impian ✨</div>
                 <div id="totalFundsDisplay" class="text-xl" style="color:#0ea5e9">0</div>
@@ -253,8 +239,8 @@
         <div class="card">
             <h3 data-i18n="expense_portion">🍕 Porsi Pengeluaran</h3>
             <div class="filter-row">
-                <select id="filterMonth" onchange="renderCharts(new Date())" style="flex:1"></select>
-                <select id="filterYear" onchange="renderCharts(new Date())" style="flex:1"></select>
+                <select id="filterMonth" onchange="renderCharts()" style="flex:1"></select>
+                <select id="filterYear" onchange="renderCharts()" style="flex:1"></select>
             </div>
             <div class="grid-2">
                 <div style="text-align:center"><small data-i18n="selected_month">Bulan Terpilih</small><div class="chart-wrapper"><canvas id="chartMonthly"></canvas></div></div>
@@ -268,8 +254,8 @@
                 <button onclick="toggleFundForm()" class="btn-sm btn-outline" data-i18n="btn_add">Tambah</button>
             </div>
             <div id="fundForm" style="display:none; margin-top:15px;">
-                <input type="text" id="fundName" placeholder="Mau beli apa?">
-                <input type="number" id="fundTarget" placeholder="Target Harga">
+                <input type="text" id="fundName" data-i18n-ph="ph_name" placeholder="Mau beli apa?">
+                <input type="number" id="fundTarget" data-i18n-ph="ph_target" placeholder="Target Harga">
                 <button onclick="addFund()" class="btn-success btn-block" data-i18n="btn_save">Simpan Target</button>
             </div>
             <div id="fundsList" class="grid-2" style="margin-top:20px"></div>
@@ -278,10 +264,10 @@
 
     <div id="view-analytics" class="view-section">
         <div class="card">
-            <h3>📈 Analisis Detail</h3>
+            <h3 data-i18n="ana_detail_title">📈 Analisis Detail</h3>
             <div class="toggle-group">
-                <div class="toggle-btn active" id="modeMonth" onclick="setAnalyticsMode('month')">🗓️ Per Bulan</div>
-                <div class="toggle-btn" id="modeRange" onclick="setAnalyticsMode('range')">📅 Rentang Tanggal</div>
+                <div class="toggle-btn active" id="modeMonth" onclick="setAnalyticsMode('month')" data-i18n="ana_monthly">🗓️ Per Bulan</div>
+                <div class="toggle-btn" id="modeRange" onclick="setAnalyticsMode('range')" data-i18n="ana_range">📅 Rentang Tanggal</div>
             </div>
             
             <div id="filterMonthArea">
@@ -297,7 +283,7 @@
                 </div>
             </div>
             
-            <button onclick="calculateAnalytics()" class="btn-block btn-success">🔎 Tampilkan Analisis</button>
+            <button onclick="calculateAnalytics()" class="btn-block btn-success" data-i18n="btn_show_ana">🔎 Tampilkan Analisis</button>
         </div>
 
         <div id="analyticsResult"></div>
@@ -316,7 +302,7 @@
                     <select id="trfTarget"></select>
                 </div>
             </div>
-            <input type="number" id="trfAmount" placeholder="Nominal">
+            <input type="number" id="trfAmount" data-i18n-ph="ph_amount" placeholder="Nominal">
             <button onclick="processTransfer()" class="btn-block" style="background:#f59e0b" data-i18n="btn_transfer">Transfer Sekarang</button>
         </div>
 
@@ -326,7 +312,7 @@
             <div class="grid-2">
                 <div>
                     <label class="text-sm" data-i18n="wallet_name">Nama Dompet</label>
-                    <input type="text" id="wName" placeholder="Contoh: BCA / Tunai">
+                    <input type="text" id="wName" data-i18n-ph="ph_wallet_name" placeholder="Contoh: BCA / Tunai">
                     <label class="text-sm" data-i18n="type">Tipe</label>
                     <select id="wIcon">
                         <option value="💵">💵 Cash</option>
@@ -350,20 +336,20 @@
             <h3 data-i18n="record_trans">📝 Catat Transaksi</h3>
             <div class="grid-2" style="margin-bottom:0">
                 <div>
-                    <label class="text-sm">Detail</label>
+                    <label class="text-sm" data-i18n="lbl_detail">Detail</label>
                     <div style="display:flex; gap:10px">
                         <input type="date" id="tDate">
                         <select id="tType"><option value="expense" data-i18n="expense">💸 Pengeluaran</option><option value="income" data-i18n="income">💰 Pemasukan</option></select>
                     </div>
                     <label class="text-sm" data-i18n="wallet">Dompet / Akun</label>
                     <select id="tWallet"></select> 
-                    <input type="number" id="tAmount" placeholder="Nominal">
-                    <input type="text" id="tNote" placeholder="Catatan (mis: Makan Siang)">
+                    <input type="number" id="tAmount" data-i18n-ph="ph_amount" placeholder="Nominal">
+                    <input type="text" id="tNote" data-i18n-ph="ph_note" placeholder="Catatan (mis: Makan Siang)">
                 </div>
                 <div>
                     <label class="text-sm" data-i18n="category">Kategori</label>
                     <select id="tCat" onchange="updateSub('tCat','tSub')"><option value="">Pilih Kategori...</option></select>
-                    <select id="tSub"><option value="">Sub Kategori...</option></select>
+                    <select id="tSub"><option value="">-</option></select>
                     <button onclick="addTransaction()" class="btn-block" style="margin-top:10px" data-i18n="btn_save">Simpan</button>
                 </div>
             </div>
@@ -373,9 +359,9 @@
             <h3 data-i18n="target_budget">🎯 Target Budget</h3>
              <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <input type="month" id="bMonth" style="flex:1">
-                <input type="number" id="bAmount" placeholder="Limit" style="flex:1">
+                <input type="number" id="bAmount" data-i18n-ph="ph_limit" placeholder="Limit" style="flex:1">
                 <select id="bCat" onchange="updateSub('bCat','bSub')" style="flex:1"><option>Kategori</option></select>
-                <select id="bSub" style="flex:1"><option>Sub</option></select>
+                <select id="bSub" style="flex:1"><option>-</option></select>
             </div>
             <button onclick="setBudget()" class="btn-outline btn-block" style="margin-top:5px" data-i18n="btn_set_alarm">Pasang Alarm Budget 🚨</button>
             <div id="budgetList" style="margin-top:15px; max-height:200px; overflow-y:auto"></div>
@@ -387,7 +373,7 @@
                 <button onclick="downloadPDF()" class="btn-success btn-sm" style="display:flex; align-items:center; gap:5px">📄 PDF</button>
             </div>
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-bottom:15px; margin-top:10px;">
-                <input type="text" id="searchKeyword" placeholder="Cari..." onkeyup="renderHistory()" style="margin:0">
+                <input type="text" id="searchKeyword" data-i18n-ph="ph_search" placeholder="Cari..." onkeyup="renderHistory()" style="margin:0">
                 <input type="date" id="searchDateStart" onchange="renderHistory()" style="margin:0">
                 <input type="date" id="searchDateEnd" onchange="renderHistory()" style="margin:0">
                 <select id="searchType" onchange="renderHistory()" style="margin:0">
@@ -410,12 +396,12 @@
             <h3 data-i18n="debt_book">📒 Buku Hutang</h3>
             <div class="grid-2">
                 <div>
-                    <input type="text" id="dName" placeholder="Siapa?">
+                    <input type="text" id="dName" data-i18n-ph="ph_who" placeholder="Siapa?">
                     <select id="dType">
                         <option value="receivable" data-i18n="receivable">Dia Pinjam Saya (Piutang) 🟢</option>
                         <option value="payable" data-i18n="payable">Saya Pinjam Dia (Hutang) 🔴</option>
                     </select>
-                    <input type="number" id="dAmount" placeholder="Berapa?">
+                    <input type="number" id="dAmount" data-i18n-ph="ph_amount" placeholder="Berapa?">
                     <button onclick="addDebt()" class="btn-block" data-i18n="btn_record">Catat</button>
                 </div>
                 <div style="text-align:center; display:flex; flex-direction:column; justify-content:center; background:var(--bg-body); border-radius:16px; padding:15px;">
@@ -434,8 +420,8 @@
             <h3 data-i18n="subs_routine">🔄 Langganan Rutin</h3>
             <p class="text-sm" style="margin-bottom:15px" data-i18n="subs_desc">Jangan sampai lupa bayar Netflix/Wifi!</p>
             <div style="display:flex; gap:10px; max-width:500px; margin:0 auto;">
-                <input type="text" id="sName" placeholder="Nama">
-                <input type="number" id="sAmount" placeholder="Biaya">
+                <input type="text" id="sName" data-i18n-ph="ph_name" placeholder="Nama">
+                <input type="number" id="sAmount" data-i18n-ph="ph_cost" placeholder="Biaya">
                 <select id="sCycle" style="width:100px"><option value="1" data-i18n="month">Bulan</option><option value="12" data-i18n="year">Tahun</option></select>
             </div>
             <button onclick="addSub()" class="btn-success" style="margin-top:10px; width:100%; max-width:500px;" data-i18n="btn_add">Tambah</button>
@@ -460,7 +446,7 @@
             </div>
             <label class="text-sm" data-i18n="nickname">Nama Panggilan</label>
             <div style="display:flex; gap:10px">
-                <input type="text" id="inputProfileName" placeholder="Nama Anda">
+                <input type="text" id="inputProfileName" data-i18n-ph="ph_your_name" placeholder="Nama Anda">
                 <button onclick="updateProfile()" class="btn-success btn-sm" style="width:auto" data-i18n="btn_save">Simpan</button>
             </div>
         </div>
@@ -472,6 +458,7 @@
             <select id="langSelect" onchange="changeLanguage(this.value)">
                 <option value="id">🇮🇩 Indonesia</option>
                 <option value="en">🇬🇧 English</option>
+                <option value="ch">CH Mandarin</option>
             </select>
 
             <label class="text-sm" style="margin-top:10px; display:block" data-i18n="currency">Mata Uang / Currency</label>
@@ -482,6 +469,9 @@
                     <option value="€">€ (Euro)</option>
                     <option value="¥">¥ (Yen)</option>
                     <option value="£">£ (Pound)</option>
+                    <option value="RM">RM (Ringgit)</option>
+                    <option value="S$">S$ (Dolar Singapura)</option>
+                    <option value="₩">₩ (Won)</option>
                 </select>
                 <select id="currencyLocale" style="flex:1">
                     <option value="id-ID">1.000.000 (ID)</option>
@@ -492,11 +482,11 @@
 
             <label class="text-sm" style="margin-top:10px; display:block" data-i18n="custom_bg">Background Kostum</label>
             <div style="display:flex; gap:10px">
-                <button onclick="document.getElementById('bgInput').click()" class="btn-outline btn-block">🖼️ Upload Foto</button>
+                <button onclick="document.getElementById('bgInput').click()" class="btn-outline btn-block" data-i18n="btn_upload">🖼️ Upload Foto</button>
                 <button onclick="resetBg()" class="btn-danger btn-icon" title="Reset">❌</button>
             </div>
             <input type="file" id="bgInput" accept="image/*" onchange="handleBgUpload(this)">
-            <p class="text-sm" style="font-size:0.75rem; margin-top:5px; color:var(--text-muted)">Max 1 MB. (Disimpan di browser)</p>
+            <p class="text-sm" style="font-size:0.75rem; margin-top:5px; color:var(--text-muted)" data-i18n="txt_max_size">Max 1 MB. (Disimpan di browser)</p>
         </div>
 
         <div class="card">
@@ -511,9 +501,9 @@
                 <input type="range" min="0" max="360" oninput="updateHue(this.value)" style="flex:1">
             </div>
             <div style="display:flex; gap:10px; margin-top:15px">
-                <button onclick="updateBg('bg-dots')" class="btn-outline btn-sm" style="flex:1">Polkadot</button>
-                <button onclick="updateBg('bg-gradient')" class="btn-outline btn-sm" style="flex:1">Gradasi</button>
-                <button onclick="updateBg('')" class="btn-outline btn-sm" style="flex:1">Polos</button>
+                <button onclick="updateBg('bg-dots')" class="btn-outline btn-sm" style="flex:1" data-i18n="theme_dots">Polkadot</button>
+                <button onclick="updateBg('bg-gradient')" class="btn-outline btn-sm" style="flex:1" data-i18n="theme_grad">Gradasi</button>
+                <button onclick="updateBg('')" class="btn-outline btn-sm" style="flex:1" data-i18n="theme_plain">Polos</button>
             </div>
         </div>
 
@@ -542,8 +532,8 @@
         <div class="card">
             <h3 data-i18n="backup">🛡️ Backup Data</h3>
             <div class="grid-2">
-                <button onclick="backupData()" class="btn-outline">💾 Simpan (.json)</button>
-                <button onclick="document.getElementById('fileInput').click()" class="btn-outline">📂 Buka (.json)</button>
+                <button onclick="backupData()" class="btn-outline" data-i18n="save">💾 Simpan (.json)</button>
+                <button onclick="document.getElementById('fileInput').click()" class="btn-outline" data-i18n="open">📂 Buka (.json)</button>
             </div>
             <input type="file" id="fileInput" accept=".json" onchange="restoreData(this)">
         </div>
@@ -553,70 +543,60 @@
 
 <div id="editModal" class="modal-overlay">
     <div class="modal-card">
-        <h3>✏️ Edit Transaksi</h3>
+        <h3 data-i18n="modal_edit">✏️ Edit Transaksi</h3>
         <input type="hidden" id="editId">
-        <label class="text-sm">Tanggal</label>
+        <label class="text-sm" data-i18n="lbl_date">Tanggal</label>
         <input type="date" id="editDate">
-        <label class="text-sm">Tipe</label>
+        <label class="text-sm" data-i18n="lbl_type">Tipe</label>
         <select id="editType">
-            <option value="expense">💸 Pengeluaran</option>
-            <option value="income">💰 Pemasukan</option>
+            <option value="expense" data-i18n="expense">💸 Pengeluaran</option>
+            <option value="income" data-i18n="income">💰 Pemasukan</option>
         </select>
-        <label class="text-sm">Dompet</label>
+        <label class="text-sm" data-i18n="wallet">Dompet</label>
         <select id="editWallet"></select>
-        <label class="text-sm">Nominal</label>
+        <label class="text-sm" data-i18n="lbl_amount">Nominal</label>
         <input type="number" id="editAmount">
-        <label class="text-sm">Kategori</label>
+        <label class="text-sm" data-i18n="category">Kategori</label>
         <select id="editCat" onchange="updateSub('editCat','editSub')"></select>
         <select id="editSub"></select>
-        <label class="text-sm">Catatan</label>
+        <label class="text-sm" data-i18n="lbl_note">Catatan</label>
         <input type="text" id="editNote">
         <div style="display:flex; gap:10px; margin-top:15px">
-            <button onclick="saveEditTransaction()" class="btn-success btn-block">Simpan</button>
-            <button onclick="closeEditModal()" class="btn-danger btn-block">Batal</button>
+            <button onclick="saveEditTransaction()" class="btn-success btn-block" data-i18n="btn_save">Simpan</button>
+            <button onclick="closeEditModal()" class="btn-danger btn-block" data-i18n="btn_cancel">Batal</button>
         </div>
     </div>
 </div>
 
 <div id="nabungModal" class="modal-overlay">
     <div class="modal-card">
-        <h3>💰 Isi Tabungan Impian</h3>
+        <h3 id="nabungTitle" data-i18n="modal_nabung">➕ Isi Tabungan</h3>
         <input type="hidden" id="nabungFundId">
-        <p class="text-sm" id="nabungTitle" style="margin-bottom:15px; font-weight:bold; color:var(--primary)"></p>
-        
-        <label class="text-sm">Jumlah Uang</label>
-        <input type="number" id="nabungAmount" placeholder="Contoh: 100000">
-        
-        <label class="text-sm">Ambil dari (Sumber Dana)</label>
+        <label class="text-sm" data-i18n="source_wallet">Dari Dompet</label>
         <select id="nabungSourceWallet"></select>
-
-        <label class="text-sm" style="margin-top:10px; display:block">Simpan ke (Dompet Tujuan)</label>
+        <label class="text-sm" data-i18n="storage_loc">Ke Dompet (Penyimpanan)</label>
         <select id="nabungTargetWallet"></select>
-        
-        <div style="display:flex; gap:10px; margin-top:20px">
-            <button onclick="processNabung()" class="btn-success btn-block">Simpan & Transfer</button>
-            <button onclick="document.getElementById('nabungModal').classList.remove('active')" class="btn-danger btn-block">Batal</button>
+        <label class="text-sm" data-i18n="lbl_amount">Nominal</label>
+        <input type="number" id="nabungAmount" data-i18n-ph="ph_amount" placeholder="Jumlah">
+        <div style="display:flex; gap:10px; margin-top:15px">
+            <button onclick="processNabung()" class="btn-success btn-block" data-i18n="btn_tabung">Tabung!</button>
+            <button onclick="document.getElementById('nabungModal').classList.remove('active')" class="btn-danger btn-block" data-i18n="btn_cancel">Batal</button>
         </div>
     </div>
 </div>
 
 <div id="emergencyModal" class="modal-overlay">
     <div class="modal-card">
-        <h3>🚨 Isi Dana Darurat</h3>
-        <p class="text-sm" style="margin-bottom:10px">Otomatis catat transfer & update saldo.</p>
-        
-        <label class="text-sm">Jumlah Dana</label>
-        <input type="number" id="emgAmount" placeholder="Nominal">
-        
-        <label class="text-sm">Dari Dompet (Sumber)</label>
+        <h3 data-i18n="modal_emergency">🌬️ Isi Dana Darurat</h3>
+        <label class="text-sm" data-i18n="source_wallet">Dari Dompet</label>
         <select id="emgSourceWallet"></select>
-        
-        <label class="text-sm">Ke Dompet (Target)</label>
+        <label class="text-sm" data-i18n="storage_loc">Simpan di Dompet</label>
         <select id="emgTargetWallet"></select>
-        
+        <label class="text-sm" data-i18n="lbl_amount">Nominal</label>
+        <input type="number" id="emgAmount" data-i18n-ph="ph_amount" placeholder="Jumlah">
         <div style="display:flex; gap:10px; margin-top:15px">
-            <button onclick="processEmergencyFund()" class="btn-success btn-block">Simpan</button>
-            <button onclick="document.getElementById('emergencyModal').classList.remove('active')" class="btn-danger btn-block">Batal</button>
+            <button onclick="processEmergencyFund()" class="btn-success btn-block" data-i18n="btn_fill_emergency">Simpan!</button>
+            <button onclick="document.getElementById('emergencyModal').classList.remove('active')" class="btn-danger btn-block" data-i18n="btn_cancel">Batal</button>
         </div>
     </div>
 </div>
@@ -627,38 +607,136 @@
 // --- DICTIONARY & I18N ---
 const translations = {
     id: {
-        nav_home: "🏠 Home", nav_wallet: "👜 Dompet", nav_record: "📝 Catat", nav_debt: "📒 Hutang", nav_subs: "🔄 Langganan", nav_account: "👤 Akun",
+        // --- NAV & GENERAL ---
+        nav_home: "🏠 Home", nav_analytics:"📊 Analisis", nav_wallet: "👜 Dompet", nav_record: "📝 Catat", nav_debt: "📒 Hutang", nav_subs: "🔄 Langganan", nav_account: "👤 Akun",
         total_asset: "Total Aset", this_month: "Bulan Ini", income: "Masuk", expense: "Keluar", runway: "Nafas Darurat 🌬️", dream_fund: "Tabungan Impian ✨",
         analysis_title: "📈 Analisis Keuangan", annual_chart: "📊 Grafik Tahunan", expense_portion: "🍕 Porsi Pengeluaran",
-        selected_month: "Bulan Terpilih", selected_year: "Tahun Terpilih", btn_add: "Tambah", btn_save: "Simpan",
+        selected_month: "Bulan Terpilih", selected_year: "Tahun Terpilih", btn_add: "Tambah", btn_save: "Simpan", btn_cancel: "Batal",
+        
+        // --- WALLET ---
         manage_wallet: "👜 Kelola Dompet", wallet_desc: "Buat akun Tunai, ATM, atau E-Wallet.", wallet_name: "Nama Dompet", type: "Tipe", initial_balance: "Saldo Awal", btn_create_wallet: "Buat Dompet",
-        transfer_title: "⇄ Transfer Antar Dompet", from: "Dari", to: "Ke", btn_transfer: "Transfer Sekarang",
+        transfer_title: "⇄ Transfer Antar Dompet", from: "Dari", to: "Ke", btn_transfer: "Transfer Sekarang", source_wallet: "Dari Dompet", target_wallet: "Ke Dompet",
+        
+        // --- TRANSACTIONS ---
         record_trans: "📝 Catat Transaksi", wallet: "Dompet / Akun", category: "Kategori", target_budget: "🎯 Target Budget", btn_set_alarm: "Pasang Alarm Budget 🚨",
-        history: "🔍 Riwayat", all: "Semua", date: "Tgl", info: "Info", amount: "Jumlah",
+        history: "🔍 Riwayat", all: "Semua", date: "Tgl", info: "Info", amount: "Jumlah", note: "Catatan",
+        
+        // --- DEBT & SUBS ---
         debt_book: "📒 Buku Hutang", receivable: "Dia Pinjam Saya (Piutang) 🟢", payable: "Saya Pinjam Dia (Hutang) 🔴", btn_record: "Catat", total_receivable: "Total Piutang (Uangmu di luar)", total_payable: "Total Hutang (Harus dibayar)",
         subs_routine: "🔄 Langganan Rutin", subs_desc: "Jangan sampai lupa bayar Netflix/Wifi!", month: "Bulan", year: "Tahun",
-        nickname: "Nama Panggilan", personal_context: "🌍 Personalisasi & Bahasa", language: "Bahasa / Language", currency: "Mata Uang / Currency", custom_bg: "Background Kostum", theme: "🎨 Tema Warna",
-        data_manage: "⚙️ Kelola Data", add_cat: "Tambah Kategori", del_cat: "Hapus Kategori", add_sub: "Tambah Sub", del_sub: "Hapus Sub Kategori", backup: "🛡️ Backup Data",
+        
+        // --- SETTINGS ---
+        nickname: "Nama Panggilan", personalization: "🌍 Personalisasi & Bahasa", language: "Bahasa / Language / 语言", currency: "Mata Uang / Currency / 货币", custom_bg: "Background Kostum", theme: "🎨 Tema Warna",
+        data_manage: "⚙️ Kelola Data", add_cat: "Tambah Kategori", del_cat: "Hapus Kategori", add_sub: "Tambah Sub", del_sub: "Hapus Sub Kategori", backup: "🛡️ Backup Data", save: "💾 Simpan (.json)", open: "📂 Buka (.json)",
+        
+        // --- MASCOT & ALERTS ---
         mascot_hi: "Halo", mascot_warn: "Hati-hati", mascot_cool: "Mode Sultan", mascot_danger: "Gawat",
         msg_balance: "Siap mengatur uang hari ini?", msg_warn: "Dana darurat menipis.", msg_cool: "Keuangan sangat sehat.", msg_danger: "Saldo minus, stop jajan!",
-        week: "Minggu Ini", year_txt: "Tahun Ini"
+        
+        // --- NEW MISSING KEYS (FIXED) ---
+        months_arr: ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"],
+        avg_monthly: "Pengeluaran Wajib / Bulan", current_ef: "Dana Darurat Saat Ini", target: "Target", progress: "Progress", status: "Status",
+        status_risk: "🟥 Risiko Tinggi", status_safe: "🟩 Aman", status_ideal: "🟦 Ideal", status_ok: "🟧 Cukup",
+        lbl_date: "Tanggal", lbl_type: "Tipe", lbl_amount: "Nominal", lbl_note: "Catatan", lbl_category: "Kategori", lbl_detail: "Detail",
+        btn_tabung: "Tabung!", btn_fill_emergency: "Simpan!",
+        modal_edit: "✏️ Edit Transaksi", modal_nabung: "➕ Isi Tabungan", modal_emergency: "🌬️ Isi Dana Darurat",
+        storage_loc: "Ke Dompet (Penyimpanan)", avg_txt: "Rata-rata",
+        balance_txt: "Saldo:", short_receivable: "PIUTANG", short_payable: "HUTANG", status_paid: "LUNAS",
+        
+        // --- PLACEHOLDER & BUTTON FIXES ---
+        ana_detail_title: "📈 Analisis Detail", ana_monthly: "🗓️ Per Bulan", ana_range: "📅 Rentang Tanggal", btn_show_ana: "🔎 Tampilkan Analisis",
+        theme_dots: "Polkadot", theme_grad: "Gradasi", theme_plain: "Polos",
+        ph_name: "Nama", ph_cost: "Biaya", ph_amount: "Berapa/Jumlah", ph_note: "Catatan (mis: Makan)", ph_who: "Siapa?", ph_wallet_name: "Contoh: BCA / Tunai", ph_target: "Target Harga", ph_your_name: "Nama Anda", ph_search: "Cari...", ph_limit: "Limit Budget",
+        opt_select: "-- Pilih --", btn_upload: "🖼️ Upload Foto", txt_max_size: "Max 1 MB. (Disimpan di browser)",
+        opt_sub_placeholder: "Sub Kategori..."
     },
     en: {
-        nav_home: "🏠 Home", nav_wallet: "👜 Wallets", nav_record: "📝 Record", nav_debt: "📒 Debts", nav_subs: "🔄 Subs", nav_account: "👤 Account",
+        // --- NAV & GENERAL ---
+        nav_home: "🏠 Home", nav_analytics:"📊 Analytics", nav_wallet: "👜 Wallets", nav_record: "📝 Record", nav_debt: "📒 Debts", nav_subs: "🔄 Subs", nav_account: "👤 Account",
         total_asset: "Total Assets", this_month: "This Month", income: "Income", expense: "Expense", runway: "Runway (Emergency) 🌬️", dream_fund: "Dream Funds ✨",
         analysis_title: "📈 Financial Analysis", annual_chart: "📊 Annual Chart", expense_portion: "🍕 Spending Portion",
-        selected_month: "Selected Month", selected_year: "Selected Year", btn_add: "Add", btn_save: "Save",
+        selected_month: "Selected Month", selected_year: "Selected Year", btn_add: "Add", btn_save: "Save", btn_cancel: "Cancel",
+        
+        // --- WALLET ---
         manage_wallet: "👜 Manage Wallets", wallet_desc: "Create Cash, Bank, or E-Wallet accounts.", wallet_name: "Wallet Name", type: "Type", initial_balance: "Initial Balance", btn_create_wallet: "Create Wallet",
-        transfer_title: "⇄ Transfer Funds", from: "From", to: "To", btn_transfer: "Transfer Now",
+        transfer_title: "⇄ Transfer Funds", from: "From", to: "To", btn_transfer: "Transfer Now", source_wallet: "From Wallet", target_wallet: "To Wallet",
+        
+        // --- TRANSACTIONS ---
         record_trans: "📝 Record Transaction", wallet: "Wallet / Account", category: "Category", target_budget: "🎯 Budget Target", btn_set_alarm: "Set Budget Alarm 🚨",
-        history: "🔍 History", all: "All", date: "Date", info: "Info", amount: "Amount",
+        history: "🔍 History", all: "All", date: "Date", info: "Info", amount: "Amount", note: "Note",
+        
+        // --- DEBT & SUBS ---
         debt_book: "📒 Debt Book", receivable: "They Owe Me (Receivable) 🟢", payable: "I Owe Them (Payable) 🔴", btn_record: "Record", total_receivable: "Total Receivables", total_payable: "Total Payables",
         subs_routine: "🔄 Subscriptions", subs_desc: "Don't forget Netflix/Wifi bills!", month: "Month", year: "Year",
-        nickname: "Nickname", personalization: "🌍 Personalization & Language", language: "Bahasa / Language", currency: "Mata Uang / Currency", custom_bg: "Custom Background", theme: "🎨 Color Theme",
-        data_manage: "⚙️ Manage Data", add_cat: "Add Category", del_cat: "Delete Category", add_sub: "Add Sub-Category", del_sub: "Delete Sub-Category", backup: "🛡️ Backup Data",
+        
+        // --- SETTINGS ---
+        nickname: "Nickname", personalization: "🌍 Personalization & Language", language: "Bahasa / Language / 语言 ", currency: "Mata Uang / Currency / 货币", custom_bg: "Custom Background", theme: "🎨 Color Theme",
+        data_manage: "⚙️ Manage Data", add_cat: "Add Category", del_cat: "Delete Category", add_sub: "Add Sub-Category", del_sub: "Delete Sub-Category", backup: "🛡️ Backup Data", save: "💾 Save (.json)", open: "📂 Open (.json)",
+        
+        // --- MASCOT & ALERTS ---
         mascot_hi: "Hello", mascot_warn: "Careful", mascot_cool: "Sultan Mode", mascot_danger: "Alert",
         msg_balance: "Ready to manage money?", msg_warn: "Emergency funds running low.", msg_cool: "Financial health is great.", msg_danger: "Balance negative, stop spending!",
-        week: "This Week", year_txt: "This Year"
+        
+        // --- NEW MISSING KEYS ---
+        months_arr: ["January","February","March","April","May","June","July","August","September","October","November","December"],
+        avg_monthly: "Mandatory Exp / Month", current_ef: "Current Emergency Fund", target: "Target", progress: "Progress", status: "Status",
+        status_risk: "🟥 High Risk", status_safe: "🟩 Safe", status_ideal: "🟦 Ideal", status_ok: "🟧 Good Enough",
+        lbl_date: "Date", lbl_type: "Type", lbl_amount: "Amount", lbl_note: "Note", lbl_category: "Category", lbl_detail: "Detail",
+        btn_tabung: "Save It!", btn_fill_emergency: "Save Fund!",
+        modal_edit: "✏️ Edit Transaction", modal_nabung: "➕ Add to Fund", modal_emergency: "🌬️ Fill Emergency Fund",
+        storage_loc: "To Wallet (Storage)", avg_txt: "Avg",
+        balance_txt: "Balance:", short_receivable: "LENT", short_payable: "DEBT", status_paid: "PAID",
+
+        // --- PLACEHOLDER & BUTTON FIXES ---
+        ana_detail_title: "📈 Detailed Analysis", ana_monthly: "🗓️ Monthly", ana_range: "📅 Date Range", btn_show_ana: "🔎 Show Analytics",
+        theme_dots: "Polka", theme_grad: "Gradient", theme_plain: "Plain",
+        ph_name: "Name", ph_cost: "Cost", ph_amount: "Amount", ph_note: "Note (ex: Lunch)", ph_who: "Who?", ph_wallet_name: "Ex: Bank / Cash", ph_target: "Target Price", ph_your_name: "Your Name", ph_search: "Search...", ph_limit: "Budget Limit",
+        opt_select: "-- Select --", btn_upload: "🖼️ Upload Photo", txt_max_size: "Max 1 MB. (Saved locally)",
+        opt_sub_placeholder: "Sub-Category..."
+    },
+    ch: {
+        // --- NAV & GENERAL ---
+        nav_home: "🏠 首页", nav_analytics:"📊 分析", nav_wallet: "👜 钱包", nav_record: "📝 记账", nav_debt: "📒 债务", nav_subs: "🔄 订阅", nav_account: "👤 我的",
+        total_asset: "总资产", this_month: "本月", income: "收入", expense: "支出", runway: "备用金 (应急)🌬️", dream_fund: "梦想基金 ✨",
+        analysis_title: "📈 财务分析", annual_chart: "📊 年度图表", expense_portion: "🍕 支出占比",
+        selected_month: "所选月份", selected_year: "所选年份", btn_add: "添加", btn_save: "保存", btn_cancel: "取消",
+        
+        // --- WALLET ---
+        manage_wallet: "👜 钱包管理", wallet_desc: "创建现金、银行或电子钱包账户。", wallet_name: "账户名称", type: "类型", initial_balance: "初始余额", btn_create_wallet: "创建钱包",
+        transfer_title: "⇄ 资金转账", from: "从", to: "到", btn_transfer: "立即转账", source_wallet: "从钱包", target_wallet: "到钱包",
+        
+        // --- TRANSACTIONS ---
+        record_trans: "📝 记录交易", wallet: "账户 / 钱包", category: "类别", target_budget: "🎯 预算目标", btn_set_alarm: "设置预算提醒🚨",
+        history: "🔍 历史记录", all: "全部", date: "日期", info: "备注", amount: "金额", note: "备注",
+        
+        // --- DEBT & SUBS ---
+        debt_book: "📒 账本", receivable: "借出款 (应收) 🟢", payable: "欠款 (应付) 🔴", btn_record: "记录", total_receivable: "总应收款", total_payable: "总应付款",
+        subs_routine: "🔄 定期订阅", subs_desc: "别忘了视频会员或宽带费用!", month: "月", year: "年",
+        
+        // --- SETTINGS ---
+        nickname: "昵称", personalization: "🌍 个性化与语言", language: "Bahasa / Language / 语言 ", currency: "Mata Uang / Currency / 货币 ", custom_bg: "自定义背景", theme: "🎨 色彩主题",
+        data_manage: "⚙️ 数据管理", add_cat: "添加类别", del_cat: "删除类别", add_sub: "添加子类别", del_sub: "删除子类别", backup: "🛡️ 备份数据", save: "💾 保存 (.json)", open: "📂 打开 (.json)",
+        
+        // --- MASCOT & ALERTS ---
+        mascot_hi: "你好", mascot_warn: "注意", mascot_cool: "土豪模式", mascot_danger: "警告",
+        msg_balance: "准备好理财了吗?", msg_warn: "应积极进步组。", msg_cool: "财务状况非常健康。", msg_danger: "余额为负，停止消费！",
+        
+        // --- NEW MISSING KEYS ---
+        months_arr: ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"],
+        avg_monthly: "每月必须支出", current_ef: "当前备用金", target: "目标", progress: "进度", status: "状态",
+        status_risk: "🟥 高风险", status_safe: "🟩 安全", status_ideal: "🟦 理想", status_ok: "🟧 还行",
+        lbl_date: "日期", lbl_type: "类型", lbl_amount: "金额", lbl_note: "备注", lbl_category: "分类", lbl_detail: "详情",
+        btn_tabung: "存入!", btn_fill_emergency: "存入备用金!",
+        modal_edit: "✏️ 编辑交易", modal_nabung: "➕ 存钱", modal_emergency: "🌬️ 补充备用金",
+        storage_loc: "存入账户", avg_txt: "平均",
+        balance_txt: "余额:", short_receivable: "借出", short_payable: "欠款", status_paid: "已付",
+
+        // --- PLACEHOLDER & BUTTON FIXES ---
+        ana_detail_title: "📈 详细分析", ana_monthly: "🗓️ 按月", ana_range: "📅 日期范围", btn_show_ana: "🔎 显示分析",
+        theme_dots: "波点", theme_grad: "渐变", theme_plain: "纯色",
+        ph_name: "名称", ph_cost: "费用", ph_amount: "金额", ph_note: "备注 (如:午餐)", ph_who: "谁?", ph_wallet_name: "例如: 银行 / 现金", ph_target: "目标金额", ph_your_name: "你的名字", ph_search: "搜索...", ph_limit: "预算限额",
+        opt_select: "-- 选择 --", btn_upload: "🖼️ 上传图片", txt_max_size: "最大 1MB (本地保存)",
+        opt_sub_placeholder: "子类别..."
     }
 };
 
@@ -669,23 +747,24 @@ let currentLang = appConfig.lang;
 function t(key) { return translations[currentLang][key] || key; }
 
 function updateDOMText() {
+    // 1. Update text content
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if(translations[currentLang][key]) el.innerText = translations[currentLang][key];
     });
-    const ph = currentLang === 'en' ? {
-        'wName': 'Ex: Bank / Cash', 'tNote': 'Note (ex: Lunch)', 'fundName': 'Item name?', 'fundTarget': 'Target Price',
-        'dName': 'Who?', 'sName': 'Name', 'inputProfileName': 'Your Name'
-    } : {
-        'wName': 'Contoh: BCA / Tunai', 'tNote': 'Catatan (mis: Cilok)', 'fundName': 'Mau beli apa?', 'fundTarget': 'Harganya berapa?',
-        'dName': 'Siapa?', 'sName': 'Nama', 'inputProfileName': 'Nama Anda'
-    };
-    for(let id in ph) { let el = document.getElementById(id); if(el) el.placeholder = ph[id]; }
+    // 2. Update Placeholders
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+        const key = el.getAttribute('data-i18n-ph');
+        if(translations[currentLang][key]) el.placeholder = translations[currentLang][key];
+    });
 }
 
 function changeLanguage(lang) {
     currentLang = lang; appConfig.lang = lang; localStorage.setItem('appConfig', JSON.stringify(appConfig));
-    updateDOMText(); renderDashboard(); renderHistory(); renderDebts(); renderSubs(); refreshTransferDropdowns();
+    updateDOMText(); renderDashboard(); renderHistory(); renderDebts(); renderSubs(); refreshTransferDropdowns(); populateChartFilters();
+    refreshCats(); // Refresh dropdown text
+    updateSub('tCat','tSub');
+    updateSub('bCat','bSub');
 }
 
 // --- CURRENCY LOGIC ---
@@ -773,68 +852,6 @@ let subs = JSON.parse(localStorage.getItem('subs') || '[]');
 let wallets = JSON.parse(localStorage.getItem('wallets')) || [{id:1, name:'Tunai', icon:'💵', initial:0}];
 let userProfile = JSON.parse(localStorage.getItem('userProfile')) || { name: 'Bos', joined: new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' }) };
 
-// --- AVATAR LOGIC ---
-function handleAvatarFile(input) {
-    const file = input.files[0];
-    if (file) {
-        if(file.size > 500 * 1024) return alert("File max 500KB");
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            userProfile.avatar = e.target.result;
-            localStorage.setItem('userProfile', JSON.stringify(userProfile));
-            updateProfileUI();
-            showToast("Avatar Updated!");
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-function updateProfileUI() {
-    document.getElementById('profileNameDisplay').innerText = userProfile.name || 'User';
-    document.getElementById('inputProfileName').value = userProfile.name || '';
-    
-    const av = document.getElementById('profileAvatar');
-    const imgSrc = userProfile.avatar || null;
-    
-    if (imgSrc) {
-        av.innerHTML = `<img src="${imgSrc}" alt="avatar">`;
-    } else {
-        // Default SVG (No Text)
-        av.innerHTML = `
-        <svg viewBox="0 0 24 24">
-            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-        </svg>`;
-    }
-}
-
-// --- HELPERS FOR CALCULATIONS ---
-function getWalletBalance(wid) {
-    const w = wallets.find(x => x.id === wid); if(!w) return 0;
-    const trans = transactions.filter(t => t.walletId === wid || (!t.walletId && wid === wallets[0].id));
-    const inc = trans.filter(t => t.type === 'income').reduce((a,b)=>a+b.amount,0);
-    const exp = trans.filter(t => t.type === 'expense').reduce((a,b)=>a+b.amount,0);
-    return w.initial + inc - exp;
-}
-
-function getEmergencyFundData() {
-    const wajibCats = ['Kebutuhan'];
-    const expWajib = transactions.filter(t => t.type === 'expense' && wajibCats.includes(t.cat));
-    const months = {};
-    expWajib.forEach(t => { const m = t.date.slice(0, 7); months[m] = (months[m] || 0) + t.amount; });
-    
-    const monthKeys = Object.keys(months);
-    const totalExp = Object.values(months).reduce((a, b) => a + b, 0);
-    const avgMonthlyExp = monthKeys.length ? totalExp / monthKeys.length : 0;
-    
-    const emergencyFund = transactions.filter(t => t.cat === 'Tabungan' && t.sub === 'Dana Darurat').reduce((sum, t) => sum + (t.type === 'income' ? t.amount : -t.amount), 0);
-    const targetMonths = 6;
-    const idealFund = avgMonthlyExp * targetMonths;
-    const progress = idealFund > 0 ? (emergencyFund / idealFund) * 100 : 0;
-    const runway = avgMonthlyExp > 0 ? (emergencyFund / avgMonthlyExp) : 0;
-
-    return { avgMonthlyExp, emergencyFund, idealFund, progress, targetMonths, runway };
-}
-
 // --- ANALYTICS LOGIC ---
 function setAnalyticsMode(mode) {
     document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
@@ -844,12 +861,14 @@ function setAnalyticsMode(mode) {
         document.getElementById('filterMonthArea').style.display = 'block';
         document.getElementById('filterRangeArea').style.display = 'none';
         
-        // Populate months/years
         const mSel = document.getElementById('anaMonth');
         const ySel = document.getElementById('anaYear');
-        if (mSel.options.length === 0) {
-            const months = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-            mSel.innerHTML = months.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+        // REFRESH MONTHS ON CHANGE LANGUAGE
+        const months = translations[currentLang].months_arr; // AMBIL DARI TRANSLATION
+        mSel.innerHTML = months.map((m,i) => `<option value="${i}">${m}</option>`).join('');
+        
+        // Cek jika tahun kosong baru isi
+        if (ySel.options.length === 0) {
             const cy = new Date().getFullYear();
             for(let i=cy-2; i<=cy+1; i++) ySel.innerHTML += `<option value="${i}">${i}</option>`;
             mSel.value = new Date().getMonth();
@@ -961,12 +980,79 @@ function calculateAnalytics() {
 // Init Analytics on load
 setAnalyticsMode('month');
 
+// --- AVATAR LOGIC ---
+function handleAvatarFile(input) {
+    const file = input.files[0];
+    if (file) {
+        if(file.size > 500 * 1024) return alert("File max 500KB");
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            userProfile.avatar = e.target.result;
+            localStorage.setItem('userProfile', JSON.stringify(userProfile));
+            updateProfileUI();
+            showToast("Avatar Updated!");
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function updateProfileUI() {
+    document.getElementById('profileNameDisplay').innerText = userProfile.name || 'User';
+    document.getElementById('inputProfileName').value = userProfile.name || '';
+    
+    const av = document.getElementById('profileAvatar');
+    const imgSrc = userProfile.avatar || null;
+    
+    if (imgSrc) {
+        av.innerHTML = `<img src="${imgSrc}" alt="avatar">`;
+    } else {
+        // Default SVG (No Text)
+        av.innerHTML = `
+        <svg viewBox="0 0 24 24">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>`;
+    }
+}
+
+// --- HELPERS FOR CALCULATIONS ---
+function getWalletBalance(wid) {
+    const w = wallets.find(x => x.id === wid); if(!w) return 0;
+    const trans = transactions.filter(t => t.walletId === wid || (!t.walletId && wid === wallets[0].id));
+    const inc = trans.filter(t => t.type === 'income').reduce((a,b)=>a+b.amount,0);
+    const exp = trans.filter(t => t.type === 'expense').reduce((a,b)=>a+b.amount,0);
+    return w.initial + inc - exp;
+}
+
+function getEmergencyFundData() {
+    const wajibCats = ['Kebutuhan'];
+    const expWajib = transactions.filter(t => t.type === 'expense' && wajibCats.includes(t.cat));
+    const months = {};
+    expWajib.forEach(t => { const m = t.date.slice(0, 7); months[m] = (months[m] || 0) + t.amount; });
+    
+    const monthKeys = Object.keys(months);
+    const totalExp = Object.values(months).reduce((a, b) => a + b, 0);
+    const avgMonthlyExp = monthKeys.length ? totalExp / monthKeys.length : 0;
+    
+    const emergencyFund = transactions.filter(t => t.cat === 'Tabungan' && t.sub === 'Dana Darurat').reduce((sum, t) => sum + (t.type === 'income' ? t.amount : -t.amount), 0);
+    const targetMonths = 6;
+    const idealFund = avgMonthlyExp * targetMonths;
+    const progress = idealFund > 0 ? (emergencyFund / idealFund) * 100 : 0;
+    const runway = avgMonthlyExp > 0 ? (emergencyFund / avgMonthlyExp) : 0;
+
+    return { avgMonthlyExp, emergencyFund, idealFund, progress, targetMonths, runway };
+}
+
 // --- INITIALIZATION ---
 function init() {
     loadTheme();
     document.getElementById('langSelect').value = appConfig.lang;
     document.getElementById('currencySymbol').value = appConfig.curSymbol;
     document.getElementById('currencyLocale').value = appConfig.curLocale;
+    
+    // Set default value for tSub before refresh - CLEANED UP
+    document.getElementById('tSub').innerHTML = `<option value="">-</option>`;
+    document.getElementById('bSub').innerHTML = `<option value="">-</option>`;
+
     updateDOMText();
 
     document.getElementById('tDate').valueAsDate = new Date();
@@ -975,6 +1061,7 @@ function init() {
     refreshCats(); refreshWalletsDropdown(); renderDashboard(); renderHistory();
     renderAccount(); 
     updateProfileUI(); // Ensure UI sync
+    renderCharts(); // Render initial charts
 }
 
 // --- PROFILE LOGIC ---
@@ -1018,7 +1105,7 @@ function renderWallets() {
         const bal = getWalletBalance(w.id);
         return `<div class="card" style="padding:15px; border-left: 5px solid var(--primary)">
             <div class="flex-between"><b>${w.icon} ${w.name}</b> <button onclick="deleteWallet(${w.id})" class="btn-danger btn-sm">×</button></div>
-            <div class="text-sm" style="margin-top:5px; opacity:0.7">Saldo:</div>
+            <div class="text-sm" style="margin-top:5px; opacity:0.7">${t('balance_txt')}</div>
             <div class="text-xl" style="color:var(--text-main)">${fmtMoney(bal)}</div>
         </div>`;
     }).join('');
@@ -1026,21 +1113,19 @@ function renderWallets() {
 function refreshWalletsDropdown() {
     const s = document.getElementById('tWallet');
     const es = document.getElementById('editWallet');
-    const fws = document.getElementById('fundWalletSelect');
     const nws = document.getElementById('nabungSourceWallet');
-    const nwt = document.getElementById('nabungTargetWallet'); // BARU
+    const nwt = document.getElementById('nabungTargetWallet'); 
     const emgSrc = document.getElementById('emgSourceWallet');
     const emgTgt = document.getElementById('emgTargetWallet');
-
+    
     const opts = wallets.map(w => `<option value="${w.id}">${w.icon} ${w.name}</option>`).join('');
+    
     if(s) s.innerHTML = opts;
     if(es) es.innerHTML = opts;
-    if(fws) fws.innerHTML = opts;
     if(nws) nws.innerHTML = opts;
-    if(nwt) nwt.innerHTML = opts; // BARU
+    if(nwt) nwt.innerHTML = opts; 
     if(emgSrc) emgSrc.innerHTML = opts;
     if(emgTgt) emgTgt.innerHTML = opts;
-
     refreshTransferDropdowns();
 }
 
@@ -1111,18 +1196,7 @@ function addTransaction() {
     transactions.push(t); saveData(); renderDashboard(); renderHistory();
     document.getElementById('tAmount').value = ''; showToast("Saved!");
 }
-
-// --- CRITICAL FIX: Make deleteTrans accessible globally ---
-window.deleteTrans = function(id) { 
-    if(confirm('Hapus transaksi ini?')) { 
-        // Force number type comparison
-        transactions = transactions.filter(t => t.id !== Number(id)); 
-        saveData(); 
-        renderDashboard(); 
-        renderHistory(); 
-        showToast("Dihapus!");
-    } 
-};
+function deleteTrans(id) { if(confirm('Hapus?')) { transactions = transactions.filter(t => t.id !== id); saveData(); renderDashboard(); renderHistory(); } }
 
 // --- DASHBOARD RENDERER (CORE) ---
 function renderDashboard() {
@@ -1139,30 +1213,31 @@ function renderDashboard() {
     
     // 3. Emergency Fund Logic
     const efData = getEmergencyFundData();
-    document.getElementById('runwayDisplay').innerText = efData.runway.toFixed(1) + " Bulan";
-    document.getElementById('avgExpDisplay').innerText = "Avg: " + fmtMoney(efData.avgMonthlyExp);
+    document.getElementById('runwayDisplay').innerText = efData.runway.toFixed(1) + " " + t('month'); // Tambahkan translate bulan
+    document.getElementById('avgExpDisplay').innerText = t('avg_txt') + ": " + fmtMoney(efData.avgMonthlyExp); // Tambahkan translate Avg
 
     // 4. Update Visuals
     updateMascot(total, efData.runway);
     renderFunds(); 
     renderFinancialAnalysis(efData);
     renderBudgetList();
+    renderCharts(); // Update charts when dashboard renders
 }
 
 function renderFinancialAnalysis(ef) {
-    let status = "🟥 Risiko Tinggi";
+    let status = t('status_risk');
     let color = "var(--danger)";
-    if (ef.progress >= 100) { status = "🟦 Ideal"; color = "#0ea5e9"; } 
-    else if (ef.progress >= 70) { status = "🟩 Aman"; color = "var(--secondary)"; } 
-    else if (ef.progress >= 30) { status = "🟧 Cukup"; color = "var(--warning)"; }
+    if (ef.progress >= 100) { status = t('status_ideal'); color = "#0ea5e9"; } 
+    else if (ef.progress >= 70) { status = t('status_safe'); color = "var(--secondary)"; } 
+    else if (ef.progress >= 30) { status = t('status_ok'); color = "var(--warning)"; }
 
     document.getElementById('analysisContainer').innerHTML = `
-        <div class="analysis-row"><span>Pengeluaran Wajib / Bulan</span><b>${fmtMoney(ef.avgMonthlyExp)}</b></div>
-        <div class="analysis-row"><span>Dana Darurat Saat Ini</span><b>${fmtMoney(ef.emergencyFund)}</b></div>
-        <div class="analysis-row"><span>Target (${ef.targetMonths} bulan)</span><b>${fmtMoney(ef.idealFund)}</b></div>
-        <div class="analysis-row"><span>Progress</span><b style="color:${color}">${ef.progress.toFixed(1)}%</b></div>
+        <div class="analysis-row"><span>${t('avg_monthly')}</span><b>${fmtMoney(ef.avgMonthlyExp)}</b></div>
+        <div class="analysis-row"><span>${t('current_ef')}</span><b>${fmtMoney(ef.emergencyFund)}</b></div>
+        <div class="analysis-row"><span>${t('target')} (${ef.targetMonths} ${t('month')})</span><b>${fmtMoney(ef.idealFund)}</b></div>
+        <div class="analysis-row"><span>${t('progress')}</span><b style="color:${color}">${ef.progress.toFixed(1)}%</b></div>
         <div style="margin-top:10px; background:#eee; border-radius:10px; overflow:hidden;"><div style="height:12px; width:${Math.min(100, ef.progress)}%; background:${color};"></div></div>
-        <div class="analysis-row"><span>Status</span><b style="color:${color}">${status}</b></div>
+        <div class="analysis-row"><span>${t('status')}</span><b style="color:${color}">${status}</b></div>
     `;
 }
 
@@ -1173,7 +1248,7 @@ function openEditModal(id) {
     
     // Fill categories first
     const ec = document.getElementById('editCat');
-    ec.innerHTML = '<option value="">-- Pilih --</option>'; 
+    ec.innerHTML = `<option value="">${t('opt_select')}</option>`; 
     Object.keys(categories).forEach(c=>ec.innerHTML+=`<option value="${c}">${c}</option>`);
     
     document.getElementById('editId').value = t.id;
@@ -1277,13 +1352,74 @@ function renderHistory() {
 function addDebt() { const name = document.getElementById('dName').value; const amount = Number(document.getElementById('dAmount').value); if(!name || !amount) return showToast("Incomplete!", "error"); debts.push({ id: Date.now(), name, amount, type: document.getElementById('dType').value, paid: false, date: new Date().toISOString().slice(0,10) }); localStorage.setItem('debts', JSON.stringify(debts)); renderDebts(); }
 function toggleDebtPaid(id) { const d = debts.find(x => x.id === id); if(d && !d.paid && confirm("Paid? Record to transaction?")) { transactions.push({ id:Date.now(), date:new Date().toISOString().split('T')[0], type:d.type==='receivable'?'income':'expense', cat:'Hutang/Piutang', sub:d.type==='receivable'?'Terima Piutang':'Bayar Hutang', amount:d.amount, note:`Lunas: ${d.name}`, walletId: wallets[0].id }); saveData(); } if(d) { d.paid = !d.paid; localStorage.setItem('debts', JSON.stringify(debts)); renderDebts(); } }
 function deleteDebt(id) { if(confirm('Delete?')) { debts=debts.filter(x=>x.id!==id); localStorage.setItem('debts', JSON.stringify(debts)); renderDebts(); } }
-function renderDebts() { const rec = debts.filter(d=>d.type==='receivable'&&!d.paid).reduce((a,b)=>a+b.amount,0); const pay = debts.filter(d=>d.type==='payable'&&!d.paid).reduce((a,b)=>a+b.amount,0); document.getElementById('totalReceivable').innerText = fmtMoney(rec); document.getElementById('totalPayable').innerText = fmtMoney(pay); document.getElementById('debtsList').innerHTML = debts.sort((a,b)=>a.paid-b.paid).map(d => `<div class="card" style="padding:15px; border:2px solid ${d.paid?'#dfe6e9':(d.type==='receivable'?'var(--secondary)':'var(--danger)')}; opacity:${d.paid?0.6:1}"><div class="flex-between"><b>${d.name}</b> <span class="badge" style="background:${d.paid?'#b2bec3':(d.type==='receivable'?'var(--secondary)':'var(--danger)')}; color:white">${d.paid?'LUNAS':(d.type==='receivable'?'PIUTANG':'HUTANG')}</span></div><div class="text-xl" style="margin:5px 0">${fmtMoney(d.amount)}</div><div class="text-sm">${d.date}</div><div style="margin-top:10px; display:flex; gap:5px"><button onclick="toggleDebtPaid(${d.id})" class="btn-sm btn-outline">✅ OK</button><button onclick="deleteDebt(${d.id})" class="btn-sm btn-danger">🗑️</button></div></div>`).join(''); }
+function renderDebts() { const rec = debts.filter(d=>d.type==='receivable'&&!d.paid).reduce((a,b)=>a+b.amount,0); const pay = debts.filter(d=>d.type==='payable'&&!d.paid).reduce((a,b)=>a+b.amount,0); document.getElementById('totalReceivable').innerText = fmtMoney(rec); document.getElementById('totalPayable').innerText = fmtMoney(pay); document.getElementById('debtsList').innerHTML = debts.sort((a,b)=>a.paid-b.paid).map(d => `<div class="card" style="padding:15px; border:2px solid ${d.paid?'#dfe6e9':(d.type==='receivable'?'var(--secondary)':'var(--danger)')}; opacity:${d.paid?0.6:1}"><div class="flex-between"><b>${d.name}</b> <span class="badge" style="background:${d.paid?'#b2bec3':(d.type==='receivable'?'var(--secondary)':'var(--danger)')}; color:white">${d.paid?t('status_paid'):(d.type==='receivable'?t('short_receivable'):t('short_payable'))}</span></div><div class="text-xl" style="margin:5px 0">${fmtMoney(d.amount)}</div><div class="text-sm">${d.date}</div><div style="margin-top:10px; display:flex; gap:5px"><button onclick="toggleDebtPaid(${d.id})" class="btn-sm btn-outline">✅ OK</button><button onclick="deleteDebt(${d.id})" class="btn-sm btn-danger">🗑️</button></div></div>`).join(''); }
 function addSub() { const n = document.getElementById('sName').value; const a = Number(document.getElementById('sAmount').value); if(n&&a) { subs.push({id:Date.now(), name:n, amount:a, cycle:document.getElementById('sCycle').value}); localStorage.setItem('subs',JSON.stringify(subs)); renderSubs(); }}
 function paySub(id) { const s = subs.find(x=>x.id===id); if(s && confirm(`Pay ${s.name}?`)) { transactions.push({id:Date.now(), date:new Date().toISOString().split('T')[0], type:'expense', cat:'Kebutuhan', sub:'Langganan', amount:s.amount, note:s.name, walletId:wallets[0].id}); saveData(); showToast("Paid!"); }}
 function deleteSub(id) { if(confirm('Delete?')) { subs=subs.filter(x=>x.id!==id); localStorage.setItem('subs',JSON.stringify(subs)); renderSubs(); }}
+function renderSubs() { document.getElementById('subsList').innerHTML = subs.map(s => `<div class="card" style="padding:15px; text-align:center"><b>${s.name}</b><div class="text-xl" style="color:var(--primary)">${fmtMoney(s.amount)}</div><div class="text-sm">/${s.cycle==='1'?'Mo':'Yr'}</div><button onclick="paySub(${s.id})" class="btn-success btn-block" style="margin-top:10px">Bayar</button><button onclick="deleteSub(${s.id})" class="btn-danger btn-block" style="margin-top:5px">Hapus</button></div>`).join(''); }
 function toggleFundForm() { document.getElementById('fundForm').style.display = document.getElementById('fundForm').style.display==='none'?'block':'none'; }
 function addFund() { const n=document.getElementById('fundName').value; const t=Number(document.getElementById('fundTarget').value); if(n&&t){ funds.push({id:Date.now(), name:n, target:t, current:0}); localStorage.setItem('sinkingFunds',JSON.stringify(funds)); renderFunds(); toggleFundForm(); }}
 function deleteFund(id) { if(confirm('Hapus?')) { funds=funds.filter(x=>x.id!==id); localStorage.setItem('sinkingFunds',JSON.stringify(funds)); renderFunds(); }}
+
+// --- CHARTS & FILTERS ---
+function populateChartFilters() {
+    const mSel = document.getElementById('filterMonth'); const ySel = document.getElementById('filterYear');
+    const months = translations[currentLang].months_arr; // AMBIL DARI TRANSLATION
+    const now = new Date();
+    
+    mSel.innerHTML = ""; ySel.innerHTML = "";
+    mSel.innerHTML = months.map((m,i) => `<option value="${i}" ${i===now.getMonth()?'selected':''}>${m}</option>`).join('');
+    
+    const cy = now.getFullYear();
+    for(let i=cy-2; i<=cy+1; i++) { ySel.innerHTML += `<option value="${i}" ${i===cy?'selected':''}>${i}</option>`; }
+}
+let charts = {};
+function renderCharts() {
+    const mVal = parseInt(document.getElementById('filterMonth').value);
+    const yVal = parseInt(document.getElementById('filterYear').value);
+    
+    const getData = (filterFn) => { const d={}; transactions.filter(t=>t.type==='expense' && t.cat !== 'Transfer' && filterFn(t)).forEach(t=>d[t.cat]=(d[t.cat]||0)+t.amount); return d; };
+    const pieConfig = (d) => ({
+        type: 'doughnut', data: { labels: Object.keys(d), datasets:[{ data:Object.values(d), backgroundColor:['#6366f1','#ec4899','#10b981','#f59e0b','#3b82f6', '#8b5cf6'], borderWidth:0 }] },
+        options: { responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{ legend:{display:false}, datalabels: { color: '#fff', font: { weight: 'bold', size: 10 }, formatter: (value, ctx) => { let sum = 0; ctx.chart.data.datasets[0].data.map(data => sum += data); return (value*100 / sum).toFixed(0)+"%"; } } } }
+    });
+    
+    const dMonthly = getData(t => { const d = new Date(t.date); return d.getMonth() === mVal && d.getFullYear() === yVal; });
+    if(charts['monthly']) charts['monthly'].destroy(); charts['monthly'] = new Chart(document.getElementById('chartMonthly'), pieConfig(dMonthly));
+    
+    const dYearly = getData(t => { const d = new Date(t.date); return d.getFullYear() === yVal; });
+    if(charts['yearly']) charts['yearly'].destroy(); charts['yearly'] = new Chart(document.getElementById('chartYearly'), pieConfig(dYearly));
+    
+    const ctxA = document.getElementById('chartAnnual'); 
+    const labels=['J','F','M','A','M','J','J','A','S','O','N','D'];
+    const iD=Array(12).fill(0), eD=Array(12).fill(0);
+    transactions.forEach(t=>{ const d=new Date(t.date); if(d.getFullYear()===yVal && t.cat !== 'Transfer'){ if(t.type==='income') iD[d.getMonth()]+=t.amount; else eD[d.getMonth()]+=t.amount; } });
+    
+    if(charts['annual']) charts['annual'].destroy(); 
+    charts['annual'] = new Chart(ctxA, { 
+        type:'bar', 
+        data:{
+            labels:labels, 
+            datasets:[
+                {label: t('income'), data:iD, backgroundColor:'#10b981', borderRadius:5}, 
+                {label: t('expense'), data:eD, backgroundColor:'#ff6b6b', borderRadius:5}
+            ]
+        }, 
+        options:{responsive:true, maintainAspectRatio:false, scales:{x:{grid:{display:false}},y:{grid:{display:false}}}, plugins:{legend:{display:false}, datalabels:{display:false}}} 
+    });
+}
+
+function renderBudgetList() {
+    const list = document.getElementById('budgetList'); const bM = document.getElementById('bMonth').value; const bd = budgets[bM]||{}; 
+    const sp = {}; transactions.filter(t=>t.type==='expense'&&t.date.startsWith(bM)).forEach(t=>sp[t.sub]=(sp[t.sub]||0)+t.amount);
+    if (Object.keys(bd).length === 0) { list.innerHTML = '<small style="opacity:0.6">No budgets.</small>'; return; }
+    list.innerHTML = Object.keys(bd).map(k => {
+        const used = sp[k]||0; const limit = bd[k]; const pct = Math.round(used/limit*100);
+        return `<div style="margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:8px;"><div class="flex-between"><small><b>${k}</b></small> <div style="display:flex; gap:5px"><button onclick="editBudget('${bM}', '${k}')" class="btn-sm btn-outline" style="padding:2px 6px; font-size:0.7rem">✏️</button><button onclick="deleteBudget('${bM}', '${k}')" class="btn-sm btn-danger" style="padding:2px 6px; font-size:0.7rem">🗑️</button></div></div><div class="flex-between" style="margin-top:2px;"><small class="text-muted">${pct}%</small><small class="text-muted">${fmtMoney(used)} / ${fmtMoney(limit)}</small></div><div style="background:#eee; height:6px; border-radius:3px; margin-top:2px"><div style="width:${Math.min(100,pct)}%; height:100%; background:${pct>100?'var(--danger)':'var(--secondary)'}; border-radius:3px"></div></div></div>`;
+    }).join('');
+}
+function deleteBudget(month, subCat) { if(confirm(`Delete ${subCat}?`)) { delete budgets[month][subCat]; localStorage.setItem('budgets', JSON.stringify(budgets)); renderBudgetList(); } }
+function editBudget(month, subCat) { const oldVal = budgets[month][subCat]; const newVal = prompt(`Limit ${subCat}:`, oldVal); if(newVal && !isNaN(newVal)) { budgets[month][subCat] = Number(newVal); localStorage.setItem('budgets', JSON.stringify(budgets)); renderBudgetList(); } }
 
 // --- NEW & IMPROVED TABUNGAN IMPIAN LOGIC ---
 function renderFunds() { 
@@ -1297,7 +1433,7 @@ function renderFunds() {
             </div>
             <div class="text-sm">${fmtMoney(f.current)} / ${fmtMoney(f.target)}</div>
             <div style="margin-top:10px; display:flex; gap:5px">
-                <button onclick="openNabungModal(${f.id})" class="btn-sm btn-success" style="flex:1">➕ Isi Tabungan</button>
+                <button onclick="openNabungModal(${f.id})" class="btn-sm btn-success" style="flex:1">${t('modal_nabung')}</button>
                 <button onclick="deleteFund(${f.id})" class="btn-sm btn-danger">×</button>
             </div>
         </div>`; 
@@ -1322,7 +1458,7 @@ function processNabung() {
     const id = Number(document.getElementById('nabungFundId').value);
     const amount = Number(document.getElementById('nabungAmount').value);
     const sourceWalletId = Number(document.getElementById('nabungSourceWallet').value);
-    const targetWalletId = Number(document.getElementById('nabungTargetWallet').value); // Baru
+    const targetWalletId = Number(document.getElementById('nabungTargetWallet').value); 
 
     // 1. Validasi
     if (!amount || amount <= 0) return showToast("Nominal tidak valid!", "error");
@@ -1428,8 +1564,35 @@ function processEmergencyFund() {
 
 
 // --- STANDARD FUNCTIONS ---
-function refreshCats() { ['tCat','bCat','parentCatSelect','delCatSelect', 'editCat', 'delSubParent'].forEach(id=>{ const el=document.getElementById(id); if(el){ el.innerHTML='<option value="">-- Pilih --</option>'; Object.keys(categories).forEach(c=>el.innerHTML+=`<option value="${c}">${c}</option>`); }}); }
-function updateSub(c,s) { const v=document.getElementById(c).value; const el=document.getElementById(s); el.innerHTML=''; if(categories[v]) categories[v].forEach(i=>el.innerHTML+=`<option value="${i}">${i}</option>`); }
+function refreshCats() { 
+    ['tCat','bCat','parentCatSelect','delCatSelect', 'editCat', 'delSubParent'].forEach(id=>{ 
+        const el=document.getElementById(id); 
+        if(el){ 
+            el.innerHTML=`<option value="">${t('opt_select')}</option>`; 
+            Object.keys(categories).forEach(c=>el.innerHTML+=`<option value="${c}">${c}</option>`); 
+        }
+    }); 
+}
+
+// --- FUNGSI UPDATE SUB DIPERBAIKI ---
+function updateSub(c,s) { 
+    const v=document.getElementById(c).value; 
+    const el=document.getElementById(s); 
+    
+    // Kosongkan opsi sebelumnya
+    el.innerHTML = "";
+    
+    // Langsung isi dengan sub kategori tanpa placeholder "Sub Kategori..."
+    if(categories[v] && categories[v].length > 0) {
+        categories[v].forEach(i => {
+            el.innerHTML += `<option value="${i}">${i}</option>`; 
+        });
+    } else {
+        // Jika tidak ada sub kategori (atau kategori belum dipilih), beri tanda strip
+        el.innerHTML = `<option value="">-</option>`;
+    }
+}
+
 function addNewCategory() { const n=document.getElementById('newCatName').value; if(n&&!categories[n]){categories[n]=[]; localStorage.setItem('myCategories',JSON.stringify(categories)); refreshCats(); showToast("Success!");} }
 function addNewSubCategory() { const p=document.getElementById('parentCatSelect').value; const s=document.getElementById('newSubName').value; if(p&&s){categories[p].push(s); localStorage.setItem('myCategories',JSON.stringify(categories)); showToast("Success!");} }
 function deleteCategory() { const n=document.getElementById('delCatSelect').value; if(n && confirm('Delete?')) { delete categories[n]; localStorage.setItem('myCategories',JSON.stringify(categories)); refreshCats(); showToast("Deleted!"); } }
@@ -1450,36 +1613,8 @@ function backupData() { const a=document.createElement('a'); a.href=URL.createOb
 function restoreData(input) { const r=new FileReader(); r.onload=e=>{ try{ const d=JSON.parse(e.target.result); if(confirm("Overwrite data?")){ if(d.transactions)localStorage.setItem('transactions',JSON.stringify(d.transactions)); if(d.categories)localStorage.setItem('myCategories',JSON.stringify(d.categories)); if(d.wallets)localStorage.setItem('wallets',JSON.stringify(d.wallets)); if(d.userProfile)localStorage.setItem('userProfile',JSON.stringify(d.userProfile)); if(d.appConfig)localStorage.setItem('appConfig',JSON.stringify(d.appConfig)); location.reload(); } }catch(e){alert("File Error");} }; if(input.files[0]) r.readAsText(input.files[0]); }
 function downloadExcel() { const ws=XLSX.utils.json_to_sheet(transactions); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Data"); XLSX.writeFile(wb,"KeuanganKu.xlsx"); }
 
-// CHARTS SKELETON
-function renderCharts(date = new Date()) {
-    const ctxA = document.getElementById('chartAnnual');
-    const ctxM = document.getElementById('chartMonthly');
-    const ctxY = document.getElementById('chartYearly');
-    
-    if(window.myChartA) window.myChartA.destroy();
-    if(window.myChartM) window.myChartM.destroy();
-    if(window.myChartY) window.myChartY.destroy();
-}
-
-// Populate Filters
-function populateChartFilters() {
-    const ySel = document.getElementById('filterYear');
-    const mSel = document.getElementById('filterMonth');
-    if(ySel) {
-        const cy = new Date().getFullYear();
-        for(let i=cy-2; i<=cy+1; i++) ySel.innerHTML += `<option value="${i}">${i}</option>`;
-        ySel.value = cy;
-    }
-    if(mSel) {
-        const months = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-        mSel.innerHTML = months.map((m,i) => `<option value="${i}">${m}</option>`).join('');
-        mSel.value = new Date().getMonth();
-    }
-}
-
 document.getElementById('bMonth').addEventListener('change', renderDashboard);
 init();
-// renderCharts(); // Called safely
 </script>
 </body>
 </html>
