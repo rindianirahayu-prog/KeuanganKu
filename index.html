@@ -245,12 +245,18 @@
         <div class="card">
             <h3 data-i18n="expense_portion">🍕 Porsi Pengeluaran</h3>
             <div class="filter-row">
-                <select id="filterMonth" onchange="renderCharts()" style="flex:1"></select>
-                <select id="filterYear" onchange="renderCharts()" style="flex:1"></select>
+                <select id="filterMonth" onchange="renderCharts()" style="flex:1" title="Pilih Bulan"></select>
+                <select id="filterYear" onchange="renderCharts()" style="flex:1" title="Pilih Tahun"></select>
             </div>
             <div class="grid-2">
-                <div style="text-align:center"><small data-i18n="selected_month">Bulan Terpilih</small><div class="chart-wrapper"><canvas id="chartMonthly"></canvas></div></div>
-                <div style="text-align:center"><small data-i18n="selected_year">Tahun Terpilih</small><div class="chart-wrapper"><canvas id="chartYearly"></canvas></div></div>
+                <div style="text-align:center">
+                    <small style="font-weight:bold; color:var(--text-muted)">Bulanan (Sesuai Filter)</small>
+                    <div class="chart-wrapper"><canvas id="chartMonthly"></canvas></div>
+                </div>
+                <div style="text-align:center">
+                    <small style="font-weight:bold; color:var(--text-muted)">Tahunan (Satu Tahun Penuh)</small>
+                    <div class="chart-wrapper"><canvas id="chartYearly"></canvas></div>
+                </div>
             </div>
         </div>
         
@@ -468,7 +474,7 @@
             <select id="langSelect" onchange="changeLanguage(this.value)">
                 <option value="id">🇮🇩 Indonesia</option>
                 <option value="en">🇬🇧 English</option>
-<option value="ch">🇨🇳 Mandarin</option>
+                <option value="ch">🇨🇳 Mandarin</option>
             </select>
 
             <label class="text-sm" style="margin-top:10px; display:block" data-i18n="currency">Mata Uang / Currency</label>
@@ -658,7 +664,6 @@ const translations = {
         opt_select: "-- Pilih --", btn_upload: "🖼️ Upload Foto", txt_max_size: "Max 1 MB. (Disimpan di browser)",
         opt_sub_placeholder: "Sub Kategori...",
 
-        // --- NEW KEYS FOR DYNAMIC TRANSLATION (FIXED) ---
         use_wallet: "Gunakan Dompet:",
         pay_btn: "Bayar",
         del_btn: "Hapus",
@@ -708,7 +713,6 @@ const translations = {
         opt_select: "-- Select --", btn_upload: "🖼️ Upload Photo", txt_max_size: "Max 1 MB. (Saved locally)",
         opt_sub_placeholder: "Sub-Category...",
 
-        // --- NEW KEYS FOR DYNAMIC TRANSLATION (FIXED) ---
         use_wallet: "Use Wallet:",
         pay_btn: "Pay",
         del_btn: "Delete",
@@ -758,7 +762,6 @@ const translations = {
         opt_select: "-- 选择 --", btn_upload: "🖼️ 上传图片", txt_max_size: "最大 1MB (本地保存)",
         opt_sub_placeholder: "子类别...",
 
-        // --- NEW KEYS FOR DYNAMIC TRANSLATION (FIXED) ---
         use_wallet: "使用钱包:",
         pay_btn: "支付",
         del_btn: "删除",
@@ -1373,35 +1376,158 @@ function toggleFundForm() { document.getElementById('fundForm').style.display = 
 function addFund() { const n=document.getElementById('fundName').value; const t=Number(document.getElementById('fundTarget').value); if(n&&t){ funds.push({id:Date.now(), name:n, target:t, current:0}); localStorage.setItem('sinkingFunds',JSON.stringify(funds)); renderFunds(); toggleFundForm(); }}
 function deleteFund(id) { if(confirm('Hapus?')) { funds=funds.filter(x=>x.id!==id); localStorage.setItem('sinkingFunds',JSON.stringify(funds)); renderFunds(); }}
 
-// --- CHARTS & FILTERS ---
+// --- CHARTS & FILTERS (UPDATED LOGIC) ---
 function populateChartFilters() {
-    const mSel = document.getElementById('filterMonth'); const ySel = document.getElementById('filterYear');
+    const mSel = document.getElementById('filterMonth'); 
+    const ySel = document.getElementById('filterYear');
     const months = translations[currentLang].months_arr;
     const now = new Date();
-    mSel.innerHTML = ""; ySel.innerHTML = "";
+    
+    mSel.innerHTML = ""; 
+    ySel.innerHTML = "";
+    
+    // Populate Months
     mSel.innerHTML = months.map((m,i) => `<option value="${i}" ${i===now.getMonth()?'selected':''}>${m}</option>`).join('');
+    
+    // Populate Years
     const cy = now.getFullYear();
-    for(let i=cy-2; i<=cy+1; i++) { ySel.innerHTML += `<option value="${i}" ${i===cy?'selected':''}>${i}</option>`; }
+    for(let i=cy-2; i<=cy+1; i++) { 
+        ySel.innerHTML += `<option value="${i}" ${i===cy?'selected':''}>${i}</option>`; 
+    }
 }
+
+// Global variable to store chart instances so we can destroy them properly
 let charts = {};
+
 function renderCharts() {
     const mVal = parseInt(document.getElementById('filterMonth').value);
     const yVal = parseInt(document.getElementById('filterYear').value);
-    const getData = (filterFn) => { const d={}; transactions.filter(t=>t.type==='expense' && t.cat !== 'Transfer' && filterFn(t)).forEach(t=>d[t.cat]=(d[t.cat]||0)+t.amount); return d; };
-    const pieConfig = (d) => ({
-        type: 'doughnut', data: { labels: Object.keys(d), datasets:[{ data:Object.values(d), backgroundColor:['#6366f1','#ec4899','#10b981','#f59e0b','#3b82f6', '#8b5cf6'], borderWidth:0 }] },
-        options: { responsive:true, maintainAspectRatio:false, cutout:'60%', plugins:{ legend:{display:false}, datalabels: { color: '#fff', font: { weight: 'bold', size: 10 }, formatter: (value, ctx) => { let sum = 0; ctx.chart.data.datasets[0].data.map(data => sum += data); return (value*100 / sum).toFixed(0)+"%"; } } } }
+
+    // Filter Logic Helper
+    // Returns { CategoryName: TotalAmount }
+    const getChartData = (filterFunction) => { 
+        const d = {}; 
+        transactions.filter(t => t.type === 'expense' && t.cat !== 'Transfer' && filterFunction(t)).forEach(t => {
+            d[t.cat] = (d[t.cat] || 0) + t.amount;
+        }); 
+        return d; 
+    };
+
+    // --- LEFT CHART (MONTHLY PIE) ---
+    // Filters: Matches Selected Month AND Selected Year
+    const dMonthly = getChartData(t => { 
+        const d = new Date(t.date); 
+        return d.getMonth() === mVal && d.getFullYear() === yVal; 
     });
-    const dMonthly = getData(t => { const d = new Date(t.date); return d.getMonth() === mVal && d.getFullYear() === yVal; });
-    if(charts['monthly']) charts['monthly'].destroy(); charts['monthly'] = new Chart(document.getElementById('chartMonthly'), pieConfig(dMonthly));
-    const dYearly = getData(t => { const d = new Date(t.date); return d.getFullYear() === yVal; });
-    if(charts['yearly']) charts['yearly'].destroy(); charts['yearly'] = new Chart(document.getElementById('chartYearly'), pieConfig(dYearly));
+
+    // --- RIGHT CHART (YEARLY PIE) ---
+    // Filters: Matches Selected Year Only (Ignores Month)
+    const dYearly = getChartData(t => { 
+        const d = new Date(t.date); 
+        return d.getFullYear() === yVal; 
+    });
+
+    // Config Generator for Pie Charts
+    const createPieConfig = (dataObject) => {
+        const labels = Object.keys(dataObject);
+        const values = Object.values(dataObject);
+        
+        // Handle Empty Data
+        if (labels.length === 0) {
+            return {
+                type: 'doughnut',
+                data: { labels: ["No Data"], datasets: [{ data: [1], backgroundColor: ["#e0e0e0"], borderWidth: 0 }] },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '60%', 
+                    plugins: { legend: { display: false }, datalabels: { display: false } } 
+                }
+            };
+        }
+
+        return {
+            type: 'doughnut', 
+            data: { 
+                labels: labels, 
+                datasets: [{ 
+                    data: values, 
+                    backgroundColor: ['#6366f1','#ec4899','#10b981','#f59e0b','#3b82f6', '#8b5cf6', '#e17055', '#00cec9'], 
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                cutout: '60%', 
+                plugins: { 
+                    legend: { display: false }, 
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                let value = context.parsed || 0;
+                                let total = context.chart._metasets[context.datasetIndex].total;
+                                let percentage = ((value / total) * 100).toFixed(1) + "%";
+                                return label + ': ' + percentage;
+                            }
+                        }
+                    },
+                    datalabels: { 
+                        color: '#fff', 
+                        font: { weight: 'bold', size: 10 }, 
+                        formatter: (value, ctx) => { 
+                            let sum = 0; 
+                            ctx.chart.data.datasets[0].data.map(data => sum += data); 
+                            let percentage = (value * 100 / sum).toFixed(0) + "%"; 
+                            return percentage === "0%" ? "" : percentage; 
+                        } 
+                    } 
+                } 
+            }
+        };
+    };
+
+    // Render Monthly
+    if(charts['monthly']) charts['monthly'].destroy(); 
+    charts['monthly'] = new Chart(document.getElementById('chartMonthly'), createPieConfig(dMonthly));
+
+    // Render Yearly
+    if(charts['yearly']) charts['yearly'].destroy(); 
+    charts['yearly'] = new Chart(document.getElementById('chartYearly'), createPieConfig(dYearly));
+
+    // --- BOTTOM CHART (ANNUAL BAR) ---
+    // Shows Trend for the selected Year
     const ctxA = document.getElementById('chartAnnual'); 
-    const labels=['J','F','M','A','M','J','J','A','S','O','N','D'];
-    const iD=Array(12).fill(0), eD=Array(12).fill(0);
-    transactions.forEach(t=>{ const d=new Date(t.date); if(d.getFullYear()===yVal && t.cat !== 'Transfer'){ if(t.type==='income') iD[d.getMonth()]+=t.amount; else eD[d.getMonth()]+=t.amount; } });
+    const labels = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+    const iD = Array(12).fill(0), eD = Array(12).fill(0);
+    
+    transactions.forEach(t => { 
+        const d = new Date(t.date); 
+        if(d.getFullYear() === yVal && t.cat !== 'Transfer') { 
+            if(t.type === 'income') iD[d.getMonth()] += t.amount; 
+            else eD[d.getMonth()] += t.amount; 
+        } 
+    });
+    
     if(charts['annual']) charts['annual'].destroy(); 
-    charts['annual'] = new Chart(ctxA, { type:'bar', data:{labels:labels, datasets:[{label: t('income'), data:iD, backgroundColor:'#10b981', borderRadius:5}, {label: t('expense'), data:eD, backgroundColor:'#ff6b6b', borderRadius:5}]}, options:{responsive:true, maintainAspectRatio:false, scales:{x:{grid:{display:false}},y:{grid:{display:false}}}, plugins:{legend:{display:false}, datalabels:{display:false}}} });
+    charts['annual'] = new Chart(ctxA, { 
+        type: 'bar', 
+        data: {
+            labels: labels, 
+            datasets: [
+                { label: t('income'), data: iD, backgroundColor: '#10b981', borderRadius: 5 }, 
+                { label: t('expense'), data: eD, backgroundColor: '#ff6b6b', borderRadius: 5 }
+            ]
+        }, 
+        options: {
+            responsive: true, 
+            maintainAspectRatio: false, 
+            scales: { x: { grid: { display: false } }, y: { grid: { display: false } } }, 
+            plugins: { legend: { display: false }, datalabels: { display: false } }
+        } 
+    });
 }
 
 function renderBudgetList() {
